@@ -15,7 +15,7 @@ import java.util.Date;
 @Getter
 @Setter
 @ToString
-public class Assignment {
+public class Assignment implements Comparable<Assignment> {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "assg_id")
@@ -57,5 +57,11 @@ public class Assignment {
         this.description = description;
         this.completed = completed;
         this.assignmentDate = assignmentDate;
+    }
+
+    @Override
+    public int compareTo(Assignment other) {
+        return this.assignmentDate
+                .compareTo(other.assignmentDate);
     }
 }

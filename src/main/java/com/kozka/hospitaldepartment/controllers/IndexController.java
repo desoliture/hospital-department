@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 
 import java.util.List;
 
@@ -34,5 +35,14 @@ public class IndexController {
         List<Assignment> assgs = assgRepo.findAll();
         model.addAttribute("assgs", assgs);
         return "assgs";
+    }
+
+    @GetMapping("/user/{id}")
+    public String getUser(@PathVariable("id") Integer id, Model model) {
+        var user = userRepo.getUserById(id);
+        var medicalCard = assgRepo.getAssignmentsByPatientId(id);
+        model.addAttribute("user", user);
+        model.addAttribute("medCard", medicalCard);
+        return "user";
     }
 }

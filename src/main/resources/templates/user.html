@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Users</title>
+</head>
+<body>
+    <p th:text="${user.getId()}"/>
+    <p th:text="${user.getEmail()}"/>
+    <p th:text="${user.getPass()}"/>
+    <p th:text="${user.getFirstName()}"/>
+    <p th:text="${user.getLastName()}"/>
+    <p th:text="${user.getUserRole()}"/>
+    <p th:text="${user.getSpecialization()}"/>
+    <br>
+    <br>
+
+    <div th:each="assg : ${medCard}">
+        <p th:text="${assg.getId()}"/>
+        <p th:text="${assg.getAssigned()}"/>
+        <p th:text="${assg.getAssigner()}"/>
+        <p th:text="${assg.getPatient()}"/>
+        <p th:text="${assg.getAssgType()}"/>
+        <p th:text="${assg.getDescription()}"/>
+        <p th:text="${assg.getCompleted()}"/>
+        <p th:text="${assg.getAssignmentDate()}"/>
+        <br>
+    </div>
+</body>
+</html>
