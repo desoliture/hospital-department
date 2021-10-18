@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="stylesheet" href="styles.css">
+        <title>Doctors</title>
+    </head>
+    <body>
+        <div class="topnav">
+            <a th:href="@{/pa}">PA</a>
+            <a th:href="@{/pats}">Patients</a>
+            <a class="active" th:href="@{/docs}">Doctors</a>
+        </div>
+
+        <div style="padding-left:16px">
+            <div th:each="doc: ${doctors}">
+                <p th:text="${doc.getId()}"/>
+                <p th:text="${doc.getEmail()}"/>
+                <p th:text="${doc.getPass()}"/>
+                <p th:text="${doc.getFirstName()}"/>
+                <p th:text="${doc.getLastName()}"/>
+                <p th:text="${doc.getUserRole()}"/>
+                <p th:text="${doc.getSpecialization()}"/>
+                <br>
+                <br>
+            </div>
+        </div>
+    </body>
+</html>

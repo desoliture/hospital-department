@@ -5,6 +5,7 @@ import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.repositories.AssignmentRepository;
 import com.kozka.hospitaldepartment.repositories.UserRepository;
 import com.kozka.hospitaldepartment.services.AssignmentService;
+import com.kozka.hospitaldepartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -18,14 +19,42 @@ import java.util.List;
  */
 @Controller
 public class IndexController {
-    @Autowired
-    private UserRepository userRepo;
+
+    private final UserRepository userRepo;
+    private final AssignmentRepository assgRepo;
+    private final AssignmentService assgService;
+    private final UserService userService;
 
     @Autowired
-    private AssignmentRepository assgRepo;
+    public IndexController(UserRepository userRepo,
+                           AssignmentRepository assgRepo,
+                           AssignmentService assgService,
+                           UserService userService) {
+        this.userRepo = userRepo;
+        this.assgRepo = assgRepo;
+        this.assgService = assgService;
+        this.userService = userService;
+    }
 
-    @Autowired
-    private AssignmentService assgService;
+    @GetMapping("/pa")
+    public String getPa() {
+        return "pa";
+    }
+
+    @GetMapping("/pats")
+    public String getPats(Model model) {
+        List<User> patients = userService.getAllPatients();
+        model.addAttribute("patients", patients);
+        return "patients";
+    }
+
+    @GetMapping("/docs")
+    public String getDocs(Model model) {
+        List<User> doctors = userService.getAllDoctors();
+        model.addAttribute("doctors", doctors);
+        return "doctors";
+    }
+
 
     @GetMapping("/users")
     public String getUsers(Model model) {
