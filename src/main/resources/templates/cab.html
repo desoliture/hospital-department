@@ -7,13 +7,19 @@
     </head>
     <body>
         <div class="topnav">
-            <a class="active" th:href="@{/pa}">PA</a>
+            <a class="active" th:href="@{/cab}">Cab</a>
             <a th:href="@{/pats}">Patients</a>
             <a th:href="@{/docs}">Doctors</a>
         </div>
 
         <div style="padding-left:16px">
-            
+            <p th:text="${currentUser.getId()}"/>
+            <p th:text="${currentUser.getEmail()}"/>
+            <p th:text="${currentUser.getPass()}"/>
+            <p th:text="${currentUser.getFirstName()}"/>
+            <p th:text="${currentUser.getLastName()}"/>
+            <p th:text="${currentUser.getUserRole()}"/>
+            <p th:text="${currentUser.getSpecialization()}"/>
         </div>
     </body>
 </html>

@@ -40,14 +40,19 @@ public class User {
     @Enumerated(value = EnumType.STRING)
     Specialization specialization;
 
+    @Column
+    Boolean active;
+
     public User(String email, String pass,
                 String firstName, String lastName,
-                UserRole userRole, Specialization specialization) {
+                UserRole userRole, Specialization specialization,
+                Boolean active) {
         this.email = email;
         this.pass = pass;
         this.firstName = firstName;
         this.lastName = lastName;
         this.userRole = userRole;
         this.specialization = specialization;
+        this.active = active;
     }
 }
