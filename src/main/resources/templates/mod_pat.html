@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Modify patient</title>
+</head>
+<body>
+<form th:action="@{/pats/{id}(id=${modify_user.getId()})}" th:method="POST" th:object="${modify_user}">
+    <label for="fn">First name</label>
+    <input id="fn" type="text" placeholder="first name" th:field="*{firstName}">
+
+    <label for="ln">Last name</label>
+    <input id="ln" type="text" placeholder="last name" th:field="*{lastName}">
+
+    <label for="em">Email</label>
+    <input id="em" type="text" placeholder="email" th:field="*{email}">
+
+    <label for="pa">Password</label>
+    <input id="pa" type="password" placeholder="password" th:field="*{pass}">
+
+    <input type="hidden" th:field="*{userRole}">
+    <input type="hidden" th:field="*{active}">
+
+    <input type="submit" value="Modify">
+</form>
+</body>
+</html>

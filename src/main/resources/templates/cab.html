@@ -8,8 +8,9 @@
     <body>
         <div class="topnav">
             <a class="active" th:href="@{/cab}">Cab</a>
-            <a th:href="@{/pats}">Patients</a>
-            <a th:href="@{/docs}">Doctors</a>
+            <a th:if="${currentUser.getUserRole().name() != 'PATIENT'}" th:href="@{/pats}">Patients</a>
+            <a th:if="${currentUser.getUserRole().name() != 'PATIENT'}" th:href="@{/docs}">Doctors</a>
+            <a th:href="@{/logout}">Logout</a>
         </div>
 
         <div style="padding-left:16px">

@@ -46,6 +46,9 @@ public class Assignment implements Comparable<Assignment> {
     @Column(name = "assg_date")
     Date assignmentDate;
 
+    @Column
+    String conclusion;
+
     public Assignment(User patient, User assigner,
                       User assigned, AssignmentType assgType,
                       String description, Boolean completed,
