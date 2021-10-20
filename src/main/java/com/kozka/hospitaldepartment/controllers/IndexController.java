@@ -1,5 +1,6 @@
 package com.kozka.hospitaldepartment.controllers;
 
+import com.kozka.hospitaldepartment.entities.Assignment;
 import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.repositories.AssignmentRepository;
@@ -8,8 +9,6 @@ import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -69,9 +68,14 @@ public class IndexController {
         List<User> doctors = userService.getAllDoctors();
         doctors.sort(Comparator.comparing(User::getId));
 
+        String email = userService.getCurrentAuthEmail();
+        User current = userRepo.getUserByEmail(email);
+
         model.addAttribute("doctors", doctors);
+        model.addAttribute("currentUser", current);
         return "doctors";
     }
+
 
     @GetMapping("/pats/add")
     @PreAuthorize("hasAuthority('ADMIN')")
@@ -120,5 +124,67 @@ public class IndexController {
         userRepo.deleteById(id);
 
         return "redirect:/pats";
+    }
+
+
+    @GetMapping("/docs/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String addDoc(Model model) {
+        model.addAttribute("new_user", new User());
+        return "add_doc";
+    }
+
+    @PostMapping("/docs/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String addDocPost(@ModelAttribute("new_user") User user) {
+        user.setActive(true);
+        user.setUserRole(UserRole.DOCTOR);
+
+        userRepo.save(user);
+
+        return "redirect:/docs";
+    }
+
+    @GetMapping("/docs/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String modDoc(
+            @PathVariable("id") Integer id,
+            Model model)
+    {
+        User user = userRepo.getUserById(id);
+        model.addAttribute("modify_user", user);
+        return "mod_doc";
+    }
+
+    @PostMapping("/docs/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String modDocPost(@ModelAttribute("modify_user") User user) {
+
+        userRepo.save(user);
+
+        return "redirect:/docs";
+    }
+
+    @GetMapping("/docs/rem/{id}")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String remDoc(
+            @PathVariable("id") Integer id,
+            Model model)
+    {
+        User doc = userRepo.getUserById(id);
+
+        List<Assignment> assgs = assgRepo.findAll();
+        for (Assignment a : assgs) {
+            if (a.getAssigned() != null && a.getAssigned().equals(doc)
+                    || a.getAssigner() != null && a.getAssigner().equals(doc)) {
+
+                doc.setActive(false);
+                userRepo.save(doc);
+                return "redirect:/docs";
+            }
+        }
+
+        userRepo.deleteById(id);
+        return "redirect:/docs";
     }
 }

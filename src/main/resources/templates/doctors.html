@@ -10,19 +10,41 @@
             <a th:href="@{/cab}">Cab</a>
             <a th:href="@{/pats}">Patients</a>
             <a class="active" th:href="@{/docs}">Doctors</a>
+            <a th:href="@{/logout}">Logout</a>
         </div>
 
         <div style="padding-left:16px">
+            <div th:if="${currentUser.getUserRole().name() == 'ADMIN'}">
+                <a class="button" th:href="@{/docs/add}">add doctor</a>
+            </div>
+
             <div th:each="doc: ${doctors}">
-                <p th:text="${doc.getId()}"/>
-                <p th:text="${doc.getEmail()}"/>
-                <p th:text="${doc.getPass()}"/>
-                <p th:text="${doc.getFirstName()}"/>
-                <p th:text="${doc.getLastName()}"/>
-                <p th:text="${doc.getUserRole()}"/>
-                <p th:text="${doc.getSpecialization()}"/>
-                <br>
-                <br>
+                <div  th:if="${doc.active}">
+                    <p th:text="${doc.getId()}"/>
+                    <p th:text="${doc.getEmail()}"/>
+                    <p th:text="${doc.getPass()}"/>
+                    <p th:text="${doc.getFirstName()}"/>
+                    <p th:text="${doc.getLastName()}"/>
+                    <p th:text="${doc.getUserRole()}"/>
+                    <p th:text="${doc.getSpecialization()}"/>
+                    <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/{id}(id=${doc.getId()})}">modify</a></p>
+                    <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/rem/{id}(id=${doc.getId()})}">remove</a></p>
+                    <br>
+                    <br>
+                </div>
+                <div th:if="${doc.active == false}" style="color: darkgray">
+                    <p th:text="${doc.getId()}"/>
+                    <p th:text="${doc.getEmail()}"/>
+                    <p th:text="${doc.getPass()}"/>
+                    <p th:text="${doc.getFirstName()}"/>
+                    <p th:text="${doc.getLastName()}"/>
+                    <p th:text="${doc.getUserRole()}"/>
+                    <p th:text="${doc.getSpecialization()}"/>
+                    <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/{id}(id=${doc.getId()})}">modify</a></p>
+                    <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/rem/{id}(id=${doc.getId()})}">remove</a></p>
+                    <br>
+                    <br>
+                </div>
             </div>
         </div>
     </body>
