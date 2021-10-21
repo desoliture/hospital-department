@@ -9,8 +9,7 @@
         <div class="topnav">
             <a th:href="@{/cab}">Cab</a>
             <a th:href="@{/pats}">Patients</a>
-            <a class="active" th:href="@{/docs}">Doctors</a>
-            <a th:href="@{/assgs}">Assignments</a>
+            <a th:href="@{/docs}">Doctors</a>
             <a th:href="@{/logout}">Logout</a>
         </div>
 
@@ -18,13 +17,7 @@
 
         <div style="padding-left:16px">
             <div th:if="${currentUser.getUserRole().name() == 'ADMIN'}">
-                <a class="button" th:href="@{/docs/add}">add doctor</a>
-            </div>
-
-            <br>
-
-            <div th:if="${currentUser.getUserRole().name() == 'ADMIN'}">
-                <a th:href="@{/docs/inactive}">Inactive doctors</a>
+                <a th:href="@{/docs}">Active doctors</a>
             </div>
 
             <div th:each="doc: ${doctors}">
@@ -35,8 +28,8 @@
                 <p th:text="${doc.getLastName()}"/>
                 <p th:text="${doc.getUserRole()}"/>
                 <p th:text="${doc.getSpecialization()}"/>
-                <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/{id}(id=${doc.getId()})}">modify</a></p>
-                <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/rem/{id}(id=${doc.getId()})}">remove</a></p>
+                <p th:if="${currentUser.getUserRole().name() == 'ADMIN'}"><a th:href="@{/docs/act/{id}(id=${doc.getId()})}">activate</a>
+                </p>
                 <br>
                 <br>
             </div>

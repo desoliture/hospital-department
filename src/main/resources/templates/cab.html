@@ -10,6 +10,7 @@
             <a class="active" th:href="@{/cab}">Cab</a>
             <a th:if="${currentUser.getUserRole().name() != 'PATIENT'}" th:href="@{/pats}">Patients</a>
             <a th:if="${currentUser.getUserRole().name() != 'PATIENT'}" th:href="@{/docs}">Doctors</a>
+            <a th:if="${currentUser.getUserRole().name() != 'PATIENT'}" th:href="@{/assgs}">Assignments</a>
             <a th:href="@{/logout}">Logout</a>
         </div>
 
@@ -22,5 +23,6 @@
             <p th:text="${currentUser.getUserRole()}"/>
             <p th:text="${currentUser.getSpecialization()}"/>
         </div>
+
     </body>
 </html>

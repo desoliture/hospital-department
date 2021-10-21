@@ -18,7 +18,10 @@
     <label for="pa">Password</label>
     <input id="pa" type="password" placeholder="password" th:field="*{pass}">
 
-<!--    выпадающий список со специализациями-->
+    <label for="sp">Specialization</label>
+    <select id="sp" th:field="*{specialization}">
+        <option th:each="s: ${specs}" th:value="${s}" th:text="${s}"/>
+    </select>
 
     <input type="submit" value="Register">
 </form>

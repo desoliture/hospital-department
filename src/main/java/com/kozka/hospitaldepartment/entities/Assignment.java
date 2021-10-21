@@ -3,7 +3,7 @@ package com.kozka.hospitaldepartment.entities;
 import lombok.*;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 /**
  * @author Kozka Ivan
@@ -14,6 +14,7 @@ import java.util.Date;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 @ToString
 public class Assignment implements Comparable<Assignment> {
     @Id
@@ -44,7 +45,7 @@ public class Assignment implements Comparable<Assignment> {
     Boolean completed;
 
     @Column(name = "assg_date")
-    Date assignmentDate;
+    LocalDateTime assignmentDate;
 
     @Column
     String conclusion;
@@ -52,7 +53,7 @@ public class Assignment implements Comparable<Assignment> {
     public Assignment(User patient, User assigner,
                       User assigned, AssignmentType assgType,
                       String description, Boolean completed,
-                      Date assignmentDate) {
+                      LocalDateTime assignmentDate) {
         this.patient = patient;
         this.assigner = assigner;
         this.assigned = assigned;

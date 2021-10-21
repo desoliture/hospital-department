@@ -22,4 +22,8 @@ public class AssignmentService {
 
         return assgs;
     }
+
+    public List<Assignment> getAll() {
+        return assgRepo.findAll();
+    }
 }

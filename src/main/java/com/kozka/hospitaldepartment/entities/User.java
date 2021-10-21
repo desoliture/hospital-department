@@ -13,6 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor
 @Getter
 @Setter
+@EqualsAndHashCode
 @ToString
 public class User {
     @Id
@@ -55,4 +56,14 @@ public class User {
         this.specialization = specialization;
         this.active = active;
     }
+
+//    public String toString() {
+//        return String.format(
+//                "%d %s %s %s %s %s %s %b",
+//                id, email, pass,
+//                firstName, lastName,
+//                userRole.name(),
+//                specialization.name(), active
+//        );
+//    }
 }

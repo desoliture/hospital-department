@@ -10,6 +10,7 @@
             <a th:href="@{/cab}">Cab</a>
             <a class="active" th:href="@{/pats}">Patients</a>
             <a th:href="@{/docs}">Doctors</a>
+            <a th:href="@{/assgs}">Assignments</a>
             <a th:href="@{/logout}">Logout</a>
         </div>
 
@@ -17,8 +18,15 @@
 
         <div style="padding-left:16px">
             <div th:if="${currentUser.getUserRole().name() == 'ADMIN'}">
-                <a class="button" th:href="@{/pats/add}">add patient</a>
+                <a th:href="@{/pats/add}">add patient</a>
             </div>
+
+            <br>
+
+            <div th:if="${currentUser.getUserRole().name() == 'ADMIN'}">
+                <a th:href="@{/pats/inactive}">Inactive patients</a>
+            </div>
+
 
             <div th:each="pat: ${patients}">
                 <p th:text="${pat.getId()}"/>
