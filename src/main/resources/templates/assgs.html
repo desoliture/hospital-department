@@ -26,7 +26,7 @@
     <div th:each="a: ${assgs}">
         <p th:text="${a.getId()}"/>
         <p th:text="${a.getAssignmentDate()}"/>
-        <p th:text="${a.getPatient()}"/>
+        <p th:text="${'Patient: ' + a.getPatient().getFirstName() + ' ' + a.getPatient().getLastName()}"/>
         <p th:text="${a.getAssigner()}"/>
         <p th:text="${a.getAssigned()}"/>
         <p th:text="${a.getAssgType()}"/>
