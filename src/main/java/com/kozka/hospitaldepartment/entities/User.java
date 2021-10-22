@@ -3,6 +3,8 @@ package com.kozka.hospitaldepartment.entities;
 import lombok.*;
 
 import javax.persistence.*;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 /**
 * @author Kozka Ivan
@@ -44,10 +46,13 @@ public class User {
     @Column
     Boolean active;
 
+    @Column
+    LocalDate birth;
+
     public User(String email, String pass,
                 String firstName, String lastName,
                 UserRole userRole, Specialization specialization,
-                Boolean active) {
+                Boolean active, LocalDate birth) {
         this.email = email;
         this.pass = pass;
         this.firstName = firstName;
@@ -55,15 +60,6 @@ public class User {
         this.userRole = userRole;
         this.specialization = specialization;
         this.active = active;
+        this.birth = birth;
     }
-
-//    public String toString() {
-//        return String.format(
-//                "%d %s %s %s %s %s %s %b",
-//                id, email, pass,
-//                firstName, lastName,
-//                userRole.name(),
-//                specialization.name(), active
-//        );
-//    }
 }

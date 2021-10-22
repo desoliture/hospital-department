@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kozka Ivan
@@ -128,5 +129,22 @@ public class UserService {
     public void makeActive(User user) {
         user.setActive(true);
         userRepo.save(user);
+    }
+
+    public User getCurrentLoggedUser() {
+        String email = getCurrentAuthEmail();
+        return userRepo.getUserByEmail(email);
+    }
+
+    public List<User> getAllActiveDoctorsAndNurses() {
+        return userRepo.getUsersByActiveTrue()
+                .stream()
+                .filter(u -> u.getUserRole() == UserRole.DOCTOR
+                        || u.getUserRole() == UserRole.NURSE)
+                .collect(Collectors.toList());
+    }
+
+    public List<Assignment> getHealthCardFor(User user) {
+        return assgService.getUserMedCard(user.getId());
     }
 }

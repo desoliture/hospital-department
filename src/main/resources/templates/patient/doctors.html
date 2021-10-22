@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Doctors</title>
+</head>
+<body>
+<!-- Nav bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand">Hospital</a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/}">Cabinet <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/assignments}">Assignments</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/health-card}">Health card</a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+            </li>
+        </ul>
+        <span class="navbar-text">
+                <form th:action="@{/logout}" th:method="post">
+                    <button type="submit" class="btn btn-light btn-sm">Logout</button>
+                </form>
+            </span>
+    </div>
+</nav>
+
+<div class="container w-50 text-center mt-4">
+    <h5 class="text-info mb-4">Doctors</h5>
+
+    <div th:each="d: ${doctors}">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Full name</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${d.firstName + ' ' + d.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${d.id})}">explore</a>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Specialization</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p th:if="${d.userRole.name() == 'DOCTOR'}" class="text-body lead" th:text="${d.specialization.namePar()}"/>
+                    <p th:unless="${d.userRole.name() == 'DOCTOR'}" class="text-body lead" th:text="Nurse"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Email</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${d.email}"/>
+                </th>
+            </tr>
+            </tbody>
+        </table>
+        <hr class="my-4">
+    </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>

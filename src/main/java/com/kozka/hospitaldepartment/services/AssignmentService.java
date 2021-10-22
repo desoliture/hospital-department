@@ -1,6 +1,7 @@
 package com.kozka.hospitaldepartment.services;
 
 import com.kozka.hospitaldepartment.entities.Assignment;
+import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.repositories.AssignmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,5 +26,9 @@ public class AssignmentService {
 
     public List<Assignment> getAll() {
         return assgRepo.findAll();
+    }
+
+    public List<Assignment> getAllForPatient(User user) {
+        return assgRepo.getAllByPatient(user);
     }
 }
