@@ -1,14 +1,17 @@
 package com.kozka.hospitaldepartment.controllers;
 
 import com.kozka.hospitaldepartment.entities.Assignment;
+import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
@@ -77,6 +80,30 @@ public class IndexController {
 
         model.addAttribute("explored_user", user);
         model.addAttribute("current_logged_in", current);
-        return "patient/user";
+
+        return "patient/explore";
+    }
+
+    @GetMapping("/manage")
+    public String getManage(Model model) {
+        var user = userService.getCurrentLoggedUser();
+        model.addAttribute("managing", user);
+
+        return "patient/manage";
+    }
+
+    @PostMapping("/manage")
+    public String setManage(@ModelAttribute("managing") User user) {
+
+        if (!userService.getUserById(user.getId())
+                .getEmail().equals(user.getEmail()))
+        {
+            SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+            SecurityContextHolder.clearContext();
+        }
+
+        userService.update(user);
+
+        return "redirect:/";
     }
 }

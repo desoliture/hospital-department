@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -146,5 +147,17 @@ public class UserService {
 
     public List<Assignment> getHealthCardFor(User user) {
         return assgService.getUserMedCard(user.getId());
+    }
+
+    @Transactional
+    public void update(User user) {
+        userRepo.setUserDetailsById(
+                user.getFirstName(), user.getLastName(),
+                user.getEmail(), user.getPass(),
+                user.getUserRole(), user.getSpecialization(),
+                user.getActive(), user.getId()
+        );
+        System.out.println(user);
+        System.out.println(getUserByEmail("n"));
     }
 }

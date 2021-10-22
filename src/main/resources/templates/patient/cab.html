@@ -39,7 +39,7 @@
         </div>
     </nav>
 
-    <div class="container w-50 text-center mt-4">
+    <div th:if="${current_logged_in != null}" class="container w-50 text-center mt-4">
         <h5 class="text-info mb-4">Personal data</h5>
 
         <table class="table table-bordered">
