@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author Kozka Ivan
@@ -19,6 +20,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     List<User> getUsersByUserRoleAndActiveIsTrue(UserRole role);
     List<User> getUsersByUserRoleAndActiveIsFalse(UserRole role);
     List<User> getUsersByActiveTrue();
+
+    @Query("select u from User u join Assignment a on a.patient.id = u.id join User d on d.id = a.assigned.id where d.id = ?1")
+    Set<User> getAllDoctorsPatients(Integer id);
 
     @Modifying
     @Query("update User u set u.firstName = ?1, u.lastName = ?2," +

@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 /**
@@ -147,6 +148,10 @@ public class UserService {
 
     public List<Assignment> getHealthCardFor(User user) {
         return assgService.getUserMedCard(user.getId());
+    }
+
+    public Set<User> getAllPatientsForDoctor(User user) {
+        return userRepo.getAllDoctorsPatients(user.getId());
     }
 
     @Transactional

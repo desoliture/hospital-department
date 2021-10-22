@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Assignments for me</title>
+</head>
+<body>
+<!-- Nav bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand disabled">
+        <div class="text-danger">
+            Hospital
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/}">Cabinet <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item active">
+                <a class="nav-link" th:href="@{/assignments}">Assignments</a>
+            </li>
+            <li th:if="${current_logged_in.userRole.name() == 'PATIENT'}" class="nav-item">
+                <a class="nav-link" th:href="@{/health-card}">Health card</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+            </li>
+            <li th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="nav-item">
+                <a class="nav-link" th:href="@{/my-patients}">My patients</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled">
+                    <div class="text-info">For me</div>
+                </a>
+            </li>
+        </ul>
+        <span class="navbar-text">
+            <form th:action="@{/logout}" th:method="post">
+                <button type="submit" class="btn btn-light btn-sm">Logout</button>
+            </form>
+        </span>
+    </div>
+</nav>
+
+<div th:if="${!assignments.isEmpty()}" class="container w-50 text-center mt-4">
+    <h5 class="text-info mb-4">Assignments</h5>
+
+    <div th:each="as: ${assignments}">
+        <table class="table table-bordered">
+            <tbody>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Patient</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.patient.firstName + ' ' + as.patient.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${current_logged_in.id})}">explore</a>
+                </th>
+            </tr>
+            <tr th:if="${as.assigner != null}">
+                <th class="align-middle">
+                    <p class="text-body lead">Assigner</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.assigner.firstName + ' ' + as.assigner.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${as.assigner.id})}">explore</a>
+                </th>
+            </tr>
+            <tr th:if="${as.assigned != null}">
+                <th class="align-middle">
+                    <p class="text-body lead">Assigned to</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.assigned.firstName + ' ' + as.assigned.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${as.assigned.id})}">explore</a>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Date</p>
+                </th>
+                <th colspan="2" class="align-middle">
+                    <p class="text-body lead" th:text="${#temporals.format(as.assignmentDate, 'dd-MM-yyyy HH:mm')}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.assgType.name().toLowerCase()}"/>
+                </th>
+                <th colspan="2" class="align-middle">
+                    <p class="text-body lead" th:text="${as.description}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Status</p>
+                </th>
+
+                <th th:if="${!as.completed && current_date > as.assignmentDate}" colspan="2" class="align-middle table-danger">
+                    <p class="text-body lead">Expired!</p>
+                </th>
+                <th th:if="${!as.completed && current_date < as.assignmentDate}" colspan="2" class="align-middle table-active">
+                    <p class="text-body lead">Planned</p>
+                    <a class="btn btn-light text-body lead mt-3" th:href="@{/hold/{id}(id=${as.id})}">Hold</a>
+                </th>
+                <th th:if="${as.completed}" colspan="2" class="align-middle table-info">
+                    <p class="text-body lead">finished</p>
+                </th>
+            </tr>
+            <tr th:if="${as.completed}">
+                <th class="align-middle">
+                    <p class="text-body lead">Conclusion</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${as.conclusion}"/>
+                </th>
+            </tr>
+            </tbody>
+        </table>
+        <hr class="my-4">
+    </div>
+</div>
+
+<div th:if="${assignments.isEmpty()}" class="container w-50 text-center mt-4">
+    <h5 class="text-primary mb-4">No assignments yet!</h5>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>

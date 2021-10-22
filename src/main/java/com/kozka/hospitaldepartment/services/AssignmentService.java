@@ -31,4 +31,12 @@ public class AssignmentService {
     public List<Assignment> getAllForPatient(User user) {
         return assgRepo.getAllByPatient(user);
     }
+
+    public List<Assignment> getAllFor(User user) {
+        return assgRepo.getAllByAssigned(user);
+    }
+
+    public List<Assignment> getAllBy(User user) {
+        return assgRepo.getAllByAssigner(user);
+    }
 }

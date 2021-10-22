@@ -12,4 +12,6 @@ import java.util.List;
 public interface AssignmentRepository extends JpaRepository<Assignment, Integer> {
     List<Assignment> getAssignmentsByPatientId(Integer index);
     List<Assignment> getAllByPatient(User user);
+    List<Assignment> getAllByAssigned(User user);
+    List<Assignment> getAllByAssigner(User user);
 }

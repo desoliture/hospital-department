@@ -12,7 +12,11 @@
 <body>
     <!-- Nav bar -->
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand">Hospital</a>
+        <a class="navbar-brand disabled">
+            <div class="text-danger">
+                Hospital
+            </div>
+        </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -24,11 +28,14 @@
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/assignments}">Assignments</a>
                 </li>
-                <li class="nav-item">
+                <li th:if="${current_logged_in.userRole.name() == 'PATIENT'}" class="nav-item">
                     <a class="nav-link" th:href="@{/health-card}">Health card</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+                </li>
+                <li th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="nav-item">
+                    <a class="nav-link" th:href="@{/my-patients}">My patients</a>
                 </li>
             </ul>
             <span class="navbar-text">
@@ -78,9 +85,17 @@
                         <p class="text-body lead" th:text="${current_logged_in.birth}"/>
                     </th>
                 </tr>
+                <tr th:if="${current_logged_in.specialization != null}">
+                    <th class="align-middle">
+                        <p class="text-body lead">Specialization</p>
+                    </th>
+                    <th class="align-middle" colspan="2">
+                        <p class="text-body lead" th:text="${current_logged_in.specialization.namePar()}"/>
+                    </th>
+                </tr>
             </tbody>
         </table>
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/manage}">Manage</a>
+        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/edit}">Edit</a>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
