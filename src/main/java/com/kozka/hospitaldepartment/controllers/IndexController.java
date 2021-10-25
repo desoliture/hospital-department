@@ -2,6 +2,7 @@ package com.kozka.hospitaldepartment.controllers;
 
 import com.kozka.hospitaldepartment.entities.Assignment;
 import com.kozka.hospitaldepartment.entities.User;
+import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,10 +42,14 @@ public class IndexController {
         var user = userService.getCurrentLoggedUser();
 
         var assgs = assignmentService.getAllForPatient(user);
-        assgs.sort(Comparator.comparing(Assignment::getAssignmentDate));
+        var allAssgs = assignmentService.getAll();
+
+        assgs.sort(Assignment::compareTo);
+        allAssgs.sort(Assignment::compareTo);
 
         model.addAttribute("current_logged_in", user);
         model.addAttribute("assignments", assgs);
+        model.addAttribute("all_assignments", allAssgs);
         model.addAttribute("current_date", LocalDateTime.now().plusDays(1));
         return "patient/assignments";
     }
@@ -159,10 +164,12 @@ public class IndexController {
     public String addAssignments(Model model) {
         var current = userService.getCurrentLoggedUser();
         var patients = userService.getAllPatientsForDoctor(current);
+        var allPatients = userService.getAllPatients();
         var doctors = userService.getAllActiveDoctorsAndNurses();
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("patients", patients);
+        model.addAttribute("all_patients", allPatients);
         model.addAttribute("doctors", doctors);
         model.addAttribute("new_assignment", new Assignment());
 
@@ -190,7 +197,7 @@ public class IndexController {
 
         assignmentService.save(newAssg);
 
-        return "redirect:/assignments/by-me";
+        return "redirect:/assignments";
     }
 
     @GetMapping("/assignments/{id}/edit")
@@ -203,11 +210,14 @@ public class IndexController {
         var current = userService.getCurrentLoggedUser();
         var patients = userService.getAllPatientsForDoctor(current);
         var doctors = userService.getAllActiveDoctorsAndNurses();
+        var allPatients = userService.getAllActivePatients();
+
 
         model.addAttribute("edited_assg", assg);
         model.addAttribute("current_logged_in", current);
         model.addAttribute("patients", patients);
         model.addAttribute("doctors", doctors);
+        model.addAttribute("all_patients", allPatients);
         return "staff/assignments-edit";
     }
 
@@ -227,13 +237,13 @@ public class IndexController {
 
         assignmentService.update(edited);
 
-        return "redirect:/assignments/by-me";
+        return "redirect:/assignments";
     }
 
     @GetMapping("/assignments/{id}/remove")
     public String removeAssignment(@PathVariable Integer id) {
         assignmentService.remove(id);
-        return "redirect:/assignments/by-me";
+        return "redirect:/assignments";
     }
 
     @GetMapping("/assignments/{id}/hold")
@@ -266,5 +276,48 @@ public class IndexController {
         model.addAttribute("current_logged_in", current);
 
         return "admin/patients";
+    }
+
+    @GetMapping("/patients/add")
+    public String addPatient(
+            Model model
+    ) {
+        model.addAttribute("new_user", new User());
+        model.addAttribute("current_logged_in",
+                userService.getCurrentLoggedUser());
+        return "admin/patients-add";
+    }
+
+    @GetMapping("/doctors/add")
+    public String addDoctor(
+            Model model
+    ) {
+        model.addAttribute("new_user", new User());
+        model.addAttribute("current_logged_in",
+                userService.getCurrentLoggedUser());
+
+        return "admin/doctors-add";
+    }
+
+    @PostMapping("/add")
+    public String addUser(
+            @ModelAttribute("new_user") User user,
+            @ModelAttribute("user_role")UserRole userRole
+    ) {
+        user.setActive(true);
+        user.setUserRole(userRole);
+
+        userService.save(user);
+
+        return "redirect:/";
+    }
+
+    @GetMapping("/users/{id}/remove")
+    public String removeUser(
+            @PathVariable("id") User user
+    ) {
+        System.out.println("**NOT DELETED: " + user);
+
+        return "redirect:/";
     }
 }

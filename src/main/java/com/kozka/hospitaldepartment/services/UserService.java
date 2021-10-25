@@ -160,9 +160,7 @@ public class UserService {
                 user.getFirstName(), user.getLastName(),
                 user.getEmail(), user.getPass(),
                 user.getUserRole(), user.getSpecialization(),
-                user.getActive(), user.getId()
+                user.getActive(), user.getBirth(), user.getId()
         );
-        System.out.println(user);
-        System.out.println(getUserByEmail("n"));
     }
 }

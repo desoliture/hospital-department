@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
 
@@ -28,10 +29,10 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("update User u set u.firstName = ?1, u.lastName = ?2," +
             "u.email = ?3, u.pass = ?4," +
             "u.userRole = ?5, u.specialization = ?6," +
-            "u.active = ?7 where u.id = ?8")
+            "u.active = ?7, u.birth = ?8 where u.id = ?9")
     void setUserDetailsById(String firstName, String lastName,
                             String email, String pass,
                             UserRole userRole, Specialization spec,
-                            Boolean active, Integer id
+                            Boolean active, LocalDate birth, Integer id
                             );
 }
