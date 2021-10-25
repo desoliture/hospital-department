@@ -37,6 +37,9 @@
                 <li th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="nav-item">
                     <a class="nav-link" th:href="@{/my-patients}">My patients</a>
                 </li>
+                <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="nav-item">
+                    <a class="nav-link" th:href="@{/patients}">Patients</a>
+                </li>
             </ul>
             <span class="navbar-text">
                 <form th:action="@{/logout}" th:method="post">
@@ -95,7 +98,7 @@
                 </tr>
             </tbody>
         </table>
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/edit}">Edit</a>
+        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${current_logged_in.id})}">Edit</a>
     </div>
 
     <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

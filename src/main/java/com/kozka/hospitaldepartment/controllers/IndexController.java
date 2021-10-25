@@ -45,7 +45,7 @@ public class IndexController {
 
         model.addAttribute("current_logged_in", user);
         model.addAttribute("assignments", assgs);
-        model.addAttribute("current_date", LocalDateTime.now());
+        model.addAttribute("current_date", LocalDateTime.now().plusDays(1));
         return "patient/assignments";
     }
 
@@ -69,7 +69,7 @@ public class IndexController {
         return "patient/health-card";
     }
 
-    @GetMapping("/user/{id}")
+    @GetMapping("/users/{id}")
     public String getUser(
             @PathVariable Integer id,
             Model model)
@@ -85,9 +85,11 @@ public class IndexController {
         return "patient/explore";
     }
 
-    @GetMapping("/edit")
-    public String getManage(Model model) {
-        var user = userService.getCurrentLoggedUser();
+    @GetMapping("/users/{id}/edit")
+    public String getManage(
+            @PathVariable("id") User user,
+            Model model
+    ) {
         var current = userService.getCurrentLoggedUser();
 
         model.addAttribute("current_logged_in", current);
@@ -98,11 +100,15 @@ public class IndexController {
     @PostMapping("/edit")
     public String setManage(@ModelAttribute("editing") User user) {
 
-        if (!userService.getUserById(user.getId())
-                .getEmail().equals(user.getEmail()))
-        {
-            SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
-            SecurityContextHolder.clearContext();
+        var current = userService.getCurrentLoggedUser();
+        var edited = userService.getUserById(user.getId());
+
+        if (current.getId().equals(edited.getId())) {
+
+            if (!edited.getEmail().equals(user.getEmail())) {
+                SecurityContextHolder.getContext().getAuthentication().setAuthenticated(false);
+                SecurityContextHolder.clearContext();
+            }
         }
 
         userService.update(user);
@@ -119,7 +125,7 @@ public class IndexController {
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("assignments", assgs);
-        model.addAttribute("current_date", LocalDateTime.now());
+        model.addAttribute("current_date", LocalDateTime.now().plusDays(1));
 
         return "staff/assignments-for-me";
     }
@@ -133,7 +139,7 @@ public class IndexController {
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("assignments", assgs);
-        model.addAttribute("current_date", LocalDateTime.now());
+        model.addAttribute("current_date", LocalDateTime.now().plusDays(1));
 
         return "staff/assignments-by-me";
     }
@@ -236,7 +242,29 @@ public class IndexController {
             Model model
     ) {
         model.addAttribute("assg_to_hold", assg);
-
+        model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
         return "staff/assignments-hold";
+    }
+
+    @PostMapping("/assignments/{id}/hold")
+    public String holdAssignmentPost(
+            @ModelAttribute("assg_to_hold") Assignment assg
+    ) {
+        assg.setCompleted(true);
+
+        assignmentService.update(assg);
+
+        return "redirect:/assignments";
+    }
+
+    @GetMapping("/patients")
+    public String getAllPatients(Model model) {
+        var patients = userService.getAllPatients();
+        var current = userService.getCurrentLoggedUser();
+
+        model.addAttribute("patients", patients);
+        model.addAttribute("current_logged_in", current);
+
+        return "admin/patients";
     }
 }

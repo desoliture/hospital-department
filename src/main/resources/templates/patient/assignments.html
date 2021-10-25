@@ -37,6 +37,9 @@
             <li th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="nav-item">
                 <a class="nav-link" th:href="@{/my-patients}">My patients</a>
             </li>
+            <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="nav-item">
+                <a class="nav-link" th:href="@{/patients}">Patients</a>
+            </li>
         </ul>
         <span class="navbar-text">
             <form th:action="@{/logout}" th:method="post">
@@ -60,7 +63,7 @@
                         <p class="text-body lead" th:text="${current_logged_in.firstName + ' ' + current_logged_in.lastName}"/>
                     </th>
                     <th class="align-middle">
-                        <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${current_logged_in.id})}">explore</a>
+                        <a class="btn btn-light text-body lead" th:href="@{/users/{id}(id=${as.patient.id})}">explore</a>
                     </th>
                 </tr>
                 <tr th:if="${as.assigner != null}">
@@ -71,7 +74,7 @@
                         <p class="text-body lead" th:text="${as.assigner.firstName + ' ' + as.assigner.lastName}"/>
                     </th>
                     <th class="align-middle">
-                        <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${as.assigner.id})}">explore</a>
+                        <a class="btn btn-light text-body lead" th:href="@{/users/{id}(id=${as.assigner.id})}">explore</a>
                     </th>
                 </tr>
                 <tr th:if="${as.assigned != null}">
@@ -82,7 +85,7 @@
                         <p class="text-body lead" th:text="${as.assigned.firstName + ' ' + as.assigned.lastName}"/>
                     </th>
                     <th class="align-middle">
-                        <a class="btn btn-light text-body lead" th:href="@{/user/{id}(id=${as.assigned.id})}">explore</a>
+                        <a class="btn btn-light text-body lead" th:href="@{/users/{id}(id=${as.assigned.id})}">explore</a>
                     </th>
                 </tr>
                 <tr>

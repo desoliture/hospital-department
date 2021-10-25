@@ -1,6 +1,7 @@
 package com.kozka.hospitaldepartment.entities;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDate;
@@ -47,6 +48,7 @@ public class User {
     Boolean active;
 
     @Column
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     LocalDate birth;
 
     public User(String email, String pass,
