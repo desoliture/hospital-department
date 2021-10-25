@@ -92,7 +92,15 @@
             </tr>
             <tr>
                 <th class="align-middle">
-                    <p class="text-body lead">Date</p>
+                    <p class="text-body lead">Creation date</p>
+                </th>
+                <th colspan="2" class="align-middle">
+                    <p class="text-body lead" th:text="${#temporals.format(as.creationDate, 'dd-MM-yyyy HH:mm')}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Assigned date</p>
                 </th>
                 <th colspan="2" class="align-middle">
                     <p class="text-body lead" th:text="${#temporals.format(as.assignmentDate, 'dd-MM-yyyy HH:mm')}"/>
@@ -133,6 +141,7 @@
             </tbody>
         </table>
         <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/edit(id=${as.id})}">Edit</a>
+        <a th:if="${!as.completed}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/remove(id=${as.id})}">Remove</a>
         <hr class="my-4">
     </div>
 </div>

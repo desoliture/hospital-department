@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <title>Add assignment</title>
+</head>
+<body>
+<!-- Nav bar -->
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <a class="navbar-brand disabled">
+        <div class="text-danger">
+            Hospital
+        </div>
+    </a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarText">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/}">Cabinet <span class="sr-only">(current)</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/assignments}">Assignments</a>
+            </li>
+            <li th:if="${current_logged_in.userRole.name() == 'PATIENT'}" class="nav-item">
+                <a class="nav-link" th:href="@{/health-card}">Health card</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+            </li>
+            <li th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="nav-item">
+                <a class="nav-link" th:href="@{/my-patients}">My patients</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link disabled">
+                    <div class="text-info">adding</div>
+                </a>
+            </li>
+        </ul>
+        <span class="navbar-text">
+                <form th:action="@{/logout}" th:method="post">
+                    <button type="submit" class="btn btn-light btn-sm">Logout</button>
+                </form>
+            </span>
+    </div>
+</nav>
+
+<div class="container w-50 text-center mt-4" th:if="${!patients.isEmpty()}">
+    <h5 class="text-info mb-4">Add assignment</h5>
+    <form th:action="@{/assignments/add}" th:method="post" th:object="${new_assignment}">
+
+        <div class="form-group m-2 mb-3">
+            <label for="pat" class="mb-1 lead">Patient</label>
+            <select name="pat-id" id="pat" class="form-control">
+                <option th:each="p: ${patients}" th:value="${p.id}" th:text="${p.toStringLight()}"/>
+            </select>
+        </div>
+
+        <div class="form-group m-2 mb-3">
+            <label for="at" class="mb-1 lead">Assignment type</label>
+            <div class="form-check" id="at"
+                 th:each="a: ${T(com.kozka.hospitaldepartment.entities.AssignmentType).values()}">
+                <input class="form-check-input" type="radio" name="at" th:value="${a}" th:text="${a}" th:field="*{assgType}"/>
+            </div>
+        </div>
+
+        <div class="form-group m-2 mb-3">
+            <label for="asd" class="mb-1 lead">Assign to</label>
+            <select name="asg-id" id="asd" class="form-control">
+                <option th:each="d: ${doctors}" th:value="${d.id}" th:text="${d.toStringLight()}"/>
+            </select>
+        </div>
+
+        <div class="form-group m-2 mb-3">
+            <label for="ds" class="mb-1 lead">Description</label>
+            <input id="ds" type="text" class="form-control" th:field="*{description}">
+        </div>
+
+        <div class="form-group m-2 mb-3">
+            <label for="ad" class="mb-1 lead">Assigned date</label>
+            <input id="ad" class="form-control" type="datetime-local" th:field="*{assignmentDate}">
+        </div>
+
+        <button type="submit" class="btn btn-primary btn-block mt-2 mb-4">Submit</button>
+    </form>
+</div>
+
+
+<div class="container w-50 text-center mt-4" th:if="${patients.isEmpty()}">
+    <h5 class="text-primary mb-4">You have no patients yet!</h5>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+</body>
+</html>

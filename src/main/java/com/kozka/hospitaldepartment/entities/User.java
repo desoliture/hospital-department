@@ -62,4 +62,8 @@ public class User {
         this.active = active;
         this.birth = birth;
     }
+
+    public String toStringLight() {
+        return firstName + " " + lastName + " | " + email;
+    }
 }

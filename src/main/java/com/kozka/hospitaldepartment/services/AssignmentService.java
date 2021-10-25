@@ -6,6 +6,7 @@ import com.kozka.hospitaldepartment.repositories.AssignmentRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 
 /**
@@ -38,5 +39,24 @@ public class AssignmentService {
 
     public List<Assignment> getAllBy(User user) {
         return assgRepo.getAllByAssigner(user);
+    }
+
+    public void save(Assignment assg) {
+        assgRepo.save(assg);
+    }
+
+    @Transactional
+    public void update(Assignment updated) {
+        assgRepo.setAssignmentDetailsById(
+                updated.getAssigned(), updated.getAssigner(),
+                updated.getPatient(), updated.getAssgType(),
+                updated.getAssignmentDate(), updated.getCreationDate(),
+                updated.getDescription(), updated.getCompleted(),
+                updated.getConclusion(), updated.getId()
+        );
+    }
+
+    public void remove(Integer id) {
+        assgRepo.deleteById(id);
     }
 }

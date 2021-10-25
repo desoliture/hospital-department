@@ -87,7 +87,7 @@
                 </tr>
                 <tr>
                     <th class="align-middle">
-                        <p class="text-body lead">Date</p>
+                        <p class="text-body lead">Assigned Date</p>
                     </th>
                     <th colspan="2" class="align-middle">
                         <p class="text-body lead" th:text="${#temporals.format(as.assignmentDate, 'dd-MM-yyyy HH:mm')}"/>
@@ -134,6 +134,9 @@
     <h5 class="text-primary mb-4">No assignments yet!</h5>
 </div>
 
+<div th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="container w-50 text-center mt-4">
+    <a class="btn btn-outline-primary" th:href="@{/assignments/add}">Create assignment</a>
+</div>
 <div th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="container w-50 text-center mt-4">
     <a class="btn btn-outline-primary" th:href="@{/assignments/by-me}">Assignments by me</a>
 </div>

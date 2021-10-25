@@ -1,6 +1,7 @@
 package com.kozka.hospitaldepartment.entities;
 
 import lombok.*;
+import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
 @ToString
 public class Assignment implements Comparable<Assignment> {
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "assg_id")
     Integer id;
 
@@ -44,8 +45,13 @@ public class Assignment implements Comparable<Assignment> {
     @Column
     Boolean completed;
 
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "assg_date")
     LocalDateTime assignmentDate;
+
+    @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+    @Column(name = "creation_date")
+    LocalDateTime creationDate;
 
     @Column
     String conclusion;
@@ -53,7 +59,8 @@ public class Assignment implements Comparable<Assignment> {
     public Assignment(User patient, User assigner,
                       User assigned, AssignmentType assgType,
                       String description, Boolean completed,
-                      LocalDateTime assignmentDate) {
+                      LocalDateTime assignmentDate,
+                      LocalDateTime creationDate) {
         this.patient = patient;
         this.assigner = assigner;
         this.assigned = assigned;
@@ -61,6 +68,7 @@ public class Assignment implements Comparable<Assignment> {
         this.description = description;
         this.completed = completed;
         this.assignmentDate = assignmentDate;
+        this.creationDate = creationDate;
     }
 
     @Override

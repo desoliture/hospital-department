@@ -148,4 +148,95 @@ public class IndexController {
 
         return "staff/my-patients";
     }
+
+    @GetMapping("/assignments/add")
+    public String addAssignments(Model model) {
+        var current = userService.getCurrentLoggedUser();
+        var patients = userService.getAllPatientsForDoctor(current);
+        var doctors = userService.getAllActiveDoctorsAndNurses();
+
+        model.addAttribute("current_logged_in", current);
+        model.addAttribute("patients", patients);
+        model.addAttribute("doctors", doctors);
+        model.addAttribute("new_assignment", new Assignment());
+
+        return "staff/assignments-add";
+    }
+
+    @PostMapping("assignments/add")
+    public String addAssignmentsPost(
+            @ModelAttribute("new_assignment") Assignment newAssg,
+            @ModelAttribute("pat-id") Integer patId,
+            @ModelAttribute("asg-id") Integer asgId
+    ) {
+        if (newAssg.getAssigner() == null)
+            newAssg.setAssigner(userService.getCurrentLoggedUser());
+
+        var patient = userService.getUserById(patId);
+        var assigned = userService.getUserById(asgId);
+
+        newAssg.setPatient(patient);
+        newAssg.setAssigned(assigned);
+        newAssg.setCompleted(false);
+        newAssg.setCreationDate(LocalDateTime.now());
+
+
+
+        assignmentService.save(newAssg);
+
+        return "redirect:/assignments/by-me";
+    }
+
+    @GetMapping("/assignments/{id}/edit")
+    public String editAssignment(
+            @PathVariable("id") Integer id,
+            @PathVariable("id") Assignment assg,
+            Model model
+    ) {
+        assg.setId(id);
+        var current = userService.getCurrentLoggedUser();
+        var patients = userService.getAllPatientsForDoctor(current);
+        var doctors = userService.getAllActiveDoctorsAndNurses();
+
+        model.addAttribute("edited_assg", assg);
+        model.addAttribute("current_logged_in", current);
+        model.addAttribute("patients", patients);
+        model.addAttribute("doctors", doctors);
+        return "staff/assignments-edit";
+    }
+
+    @PostMapping("assignments/{id}/edit")
+    public String editAssignmentPost(
+            @ModelAttribute("edited_assg") Assignment edited,
+            @PathVariable("id") Integer id,
+            @ModelAttribute("pat-id") Integer patId,
+            @ModelAttribute("asg-id") Integer asgId
+    ) {
+        var patient = userService.getUserById(patId);
+        var assigned = userService.getUserById(asgId);
+
+        edited.setId(id);
+        edited.setPatient(patient);
+        edited.setAssigned(assigned);
+
+        assignmentService.update(edited);
+
+        return "redirect:/assignments/by-me";
+    }
+
+    @GetMapping("/assignments/{id}/remove")
+    public String removeAssignment(@PathVariable Integer id) {
+        assignmentService.remove(id);
+        return "redirect:/assignments/by-me";
+    }
+
+    @GetMapping("/assignments/{id}/hold")
+    public String holdAssignment(
+            @PathVariable("id") Assignment assg,
+            Model model
+    ) {
+        model.addAttribute("assg_to_hold", assg);
+
+        return "staff/assignments-hold";
+    }
 }
