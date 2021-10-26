@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:fragment="user-table">
+        <table class="table table-bordered">
+
+            <tbody>
+            <tr th:if="${u.userRole.name() == 'PATIENT'}" class="table-primary">
+                <th colspan="2" th:text="${u.userRole}"/>
+            </tr>
+            <tr th:if="${u.userRole.name() == 'DOCTOR'}" class="table-info">
+                <th colspan="2" th:text="${u.userRole}"/>
+            </tr>
+            <tr th:if="${u.userRole.name() == 'NURSE'}" class="table-success">
+                <th colspan="2" th:text="${u.userRole}"/>
+            </tr>
+            <tr th:if="${u.userRole.name() == 'ADMIN'}" class="table-light">
+                <th colspan="2" th:text="${u.userRole}"/>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Full name</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${u.firstName + ' ' + u.lastName}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Email</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${u.email}"/>
+                </th>
+            </tr>
+            <tr th:if="${u.birth != null}">
+                <th class="align-middle">
+                    <p class="text-body lead">Birth</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead"
+                       th:text="${#temporals.format(u.birth, 'dd-MM-yyyy')}"/>
+
+                </th>
+            </tr>
+            <tr th:if="${u.specialization != null}">
+                <th class="align-middle">
+                    <p class="text-body lead">Specialization</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${u.specialization.namePar()}"/>
+                </th>
+            </tr>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

@@ -1,10 +1,8 @@
 package com.kozka.hospitaldepartment.services;
 
 import com.kozka.hospitaldepartment.entities.Assignment;
-import com.kozka.hospitaldepartment.entities.InactiveCause;
 import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
-import com.kozka.hospitaldepartment.repositories.CauseRepository;
 import com.kozka.hospitaldepartment.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -27,9 +25,6 @@ public class UserService {
 
     @Autowired
     AssignmentService assgService;
-
-    @Autowired
-    CauseRepository causeRepo;
 
     public List<User> getAllDoctors() {
         return userRepo.getUsersByUserRole(UserRole.DOCTOR);
@@ -71,18 +66,6 @@ public class UserService {
                 .getUsersByUserRoleAndActiveIsFalse(UserRole.PATIENT);
     }
 
-    public void makeInactive(User user) {
-        InactiveCause cause = new InactiveCause(
-                user,
-                LocalDateTime.now(),
-                "deleted by admin"
-        );
-        user.setActive(false);
-
-        causeRepo.save(cause);
-        userRepo.save(user);
-    }
-
     public User getUserByEmail(String email) {
         return userRepo.getUserByEmail(email);
     }
@@ -97,40 +80,6 @@ public class UserService {
 
     public void deleteById(Integer id) {
         userRepo.deleteById(id);
-    }
-
-    public void ifNotAppointedDeleteElseMakeInactive(Integer id) {
-        User user = getUserById(id);
-
-        List<Assignment> assgs = assgService.getAll();
-
-        boolean appointed = assgs.stream()
-                .anyMatch( a ->
-                                a.getPatient() != null
-                                        && a.getPatient().equals(user)
-                                ||
-                                a.getAssigned() != null
-                                        && a.getAssigned().equals(user)
-                                ||
-                                a.getAssigner() != null
-                                        && a.getAssigner().equals(user)
-                );
-
-        if (!appointed) {
-            deleteById(id);
-        }
-        else {
-            makeInactive(user);
-        }
-    }
-
-    public void makeActive(Integer id) {
-        makeActive(userRepo.getUserById(id));
-    }
-
-    public void makeActive(User user) {
-        user.setActive(true);
-        userRepo.save(user);
     }
 
     public User getCurrentLoggedUser() {
@@ -154,6 +103,10 @@ public class UserService {
         return userRepo.getAllDoctorsPatients(user.getId());
     }
 
+    public Set<User> getAllActivePatientsForDoctor(User user) {
+        return userRepo.getAllDoctorsPatients(user.getId());
+    }
+
     @Transactional
     public void update(User user) {
         userRepo.setUserDetailsById(
@@ -162,5 +115,33 @@ public class UserService {
                 user.getUserRole(), user.getSpecialization(),
                 user.getActive(), user.getBirth(), user.getId()
         );
+    }
+
+    public void remove(Integer id) {
+        userRepo.deleteById(id);
+    }
+
+    public void toArchive(Integer id) {
+        var u = getUserById(id);
+        u.setActive(false);
+
+        userRepo.save(u);
+    }
+
+    public void toArchive(User u) {
+        u.setActive(false);
+        userRepo.save(u);
+    }
+
+    public void unArchive(Integer id) {
+        var u = getUserById(id);
+        u.setActive(true);
+
+        userRepo.save(u);
+    }
+
+    public void unArchive(User u) {
+        u.setActive(true);
+        userRepo.save(u);
     }
 }

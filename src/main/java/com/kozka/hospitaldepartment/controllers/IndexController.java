@@ -1,6 +1,7 @@
 package com.kozka.hospitaldepartment.controllers;
 
 import com.kozka.hospitaldepartment.entities.Assignment;
+import com.kozka.hospitaldepartment.entities.AssignmentType;
 import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.AssignmentService;
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 
@@ -69,7 +71,7 @@ public class IndexController {
         var user = userService.getCurrentLoggedUser();
         var healthCard = userService.getHealthCardFor(user);
 
-//        model.addAttribute("current_logged_in", user);
+        model.addAttribute("current_logged_in", user);
         model.addAttribute("health_card", healthCard);
         return "patient/health-card";
     }
@@ -152,7 +154,7 @@ public class IndexController {
     @GetMapping("/my-patients")
     public String getMyPatients(Model model) {
         var current = userService.getCurrentLoggedUser();
-        var patients = userService.getAllPatientsForDoctor(current);
+        var patients = userService.getAllActivePatientsForDoctor(current);
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("patients", patients);
@@ -163,13 +165,15 @@ public class IndexController {
     @GetMapping("/assignments/add")
     public String addAssignments(Model model) {
         var current = userService.getCurrentLoggedUser();
-        var patients = userService.getAllPatientsForDoctor(current);
-        var allPatients = userService.getAllPatients();
-        var doctors = userService.getAllActiveDoctorsAndNurses();
+        var patients = userService.getAllActivePatientsForDoctor(current);
+        var allPatients = userService.getAllActivePatients();
+        var doctors = userService.getAllActiveDoctors();
+        var allDoctors = userService.getAllActiveDoctorsAndNurses();
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("patients", patients);
         model.addAttribute("all_patients", allPatients);
+        model.addAttribute("all_doctors", allDoctors);
         model.addAttribute("doctors", doctors);
         model.addAttribute("new_assignment", new Assignment());
 
@@ -180,10 +184,20 @@ public class IndexController {
     public String addAssignmentsPost(
             @ModelAttribute("new_assignment") Assignment newAssg,
             @ModelAttribute("pat-id") Integer patId,
-            @ModelAttribute("asg-id") Integer asgId
+            @ModelAttribute("asg-id-all") Integer asgIdAll,
+            @ModelAttribute("asg-id-doc") Integer asgIdDoc
     ) {
         if (newAssg.getAssigner() == null)
             newAssg.setAssigner(userService.getCurrentLoggedUser());
+
+        int asgId;
+
+        if (newAssg.getAssgType() == AssignmentType.PROCEDURE
+                || newAssg.getAssgType() == AssignmentType.MEDICINE)
+        {
+            asgId = asgIdAll;
+        }
+        else asgId = asgIdDoc;
 
         var patient = userService.getUserById(patId);
         var assigned = userService.getUserById(asgId);
@@ -192,8 +206,6 @@ public class IndexController {
         newAssg.setAssigned(assigned);
         newAssg.setCompleted(false);
         newAssg.setCreationDate(LocalDateTime.now());
-
-
 
         assignmentService.save(newAssg);
 
@@ -208,7 +220,7 @@ public class IndexController {
     ) {
         assg.setId(id);
         var current = userService.getCurrentLoggedUser();
-        var patients = userService.getAllPatientsForDoctor(current);
+        var patients = userService.getAllActivePatientsForDoctor(current);
         var doctors = userService.getAllActiveDoctorsAndNurses();
         var allPatients = userService.getAllActivePatients();
 
@@ -240,12 +252,6 @@ public class IndexController {
         return "redirect:/assignments";
     }
 
-    @GetMapping("/assignments/{id}/remove")
-    public String removeAssignment(@PathVariable Integer id) {
-        assignmentService.remove(id);
-        return "redirect:/assignments";
-    }
-
     @GetMapping("/assignments/{id}/hold")
     public String holdAssignment(
             @PathVariable("id") Assignment assg,
@@ -269,7 +275,7 @@ public class IndexController {
 
     @GetMapping("/patients")
     public String getAllPatients(Model model) {
-        var patients = userService.getAllPatients();
+        var patients = userService.getAllActivePatients();
         var current = userService.getCurrentLoggedUser();
 
         model.addAttribute("patients", patients);
@@ -312,12 +318,119 @@ public class IndexController {
         return "redirect:/";
     }
 
+
+    @GetMapping("/assignments/{id}/remove")
+    public String removeAssignment(
+            @PathVariable("id") Assignment assignment,
+            Model model,
+            HttpServletRequest request
+    ) {
+        String previousUrl = request
+                .getHeader("Referer")
+                .replace("http://localhost:8080", "");
+
+        model.addAttribute("assg_to_remove", assignment);
+        model.addAttribute("previous_url", previousUrl);
+        return "admin/assignments-remove";
+    }
+
+    @PostMapping("assignments/remove")
+    public String removeAssignment(
+            @ModelAttribute Integer id,
+            @ModelAttribute("previous_url") String previousUrl
+    ) {
+        assignmentService.remove(id);
+
+        return "redirect:/" + previousUrl;
+    }
+
     @GetMapping("/users/{id}/remove")
     public String removeUser(
-            @PathVariable("id") User user
+            @PathVariable("id") User user,
+            Model model,
+            HttpServletRequest request
     ) {
-        System.out.println("**NOT DELETED: " + user);
+        String previousUrl = request
+                .getHeader("Referer")
+                .replace("http://localhost:8080", "");
 
-        return "redirect:/";
+        if (userService.getCurrentLoggedUser()
+                .getId()
+                .equals(user.getId()))
+            return "redirect:" + previousUrl;
+
+        model.addAttribute("user_to_remove", user);
+        model.addAttribute("previous_url", previousUrl);
+
+        return "admin/users-remove";
+    }
+
+    @PostMapping("/users/remove")
+    public String removeUser(
+            @ModelAttribute("id") Integer id,
+            @ModelAttribute("previous_url") String previousUrl
+    ) {
+        userService.toArchive(id);
+
+        return "redirect:" + previousUrl;
+    }
+
+    @GetMapping("/archive")
+    public String getArchive(Model model) {
+        model.addAttribute("current_logged_in",
+                userService.getCurrentLoggedUser());
+
+        return "admin/archive";
+    }
+
+    @GetMapping("/archive/patients")
+    public String getArchivedPatients(Model model) {
+        var users = userService.getAllInactivePatients();
+
+        model.addAttribute("archived", users);
+        model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
+
+        return "admin/archived-users";
+    }
+
+    @GetMapping("/archive/doctors")
+    public String getArchivedDoctors(Model model) {
+        var users = userService.getAllInactiveDoctors();
+
+        model.addAttribute("archived", users);
+        model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
+
+        return "admin/archived-users";
+    }
+
+    @GetMapping("/users/{id}/unarchive")
+    public String unarchiveUser(
+            @PathVariable("id") User user,
+            Model model,
+            HttpServletRequest request
+    ) {
+        String previousUrl = request
+                .getHeader("Referer")
+                .replace("http://localhost:8080", "");
+
+        if (userService.getCurrentLoggedUser()
+                .getId()
+                .equals(user.getId()))
+            return "redirect:" + previousUrl;
+
+        model.addAttribute("user_to_unarchive", user);
+        model.addAttribute("previous_url", previousUrl);
+
+        return "admin/users-unarchive";
+    }
+
+    @PostMapping("/users/unarchive")
+    public String unarchiveUser(
+            @ModelAttribute("id") Integer id,
+            @ModelAttribute("previous_url") String previousUrl
+    ) {
+        userService.unArchive(id);
+
+        return "redirect:" + previousUrl;
     }
 }

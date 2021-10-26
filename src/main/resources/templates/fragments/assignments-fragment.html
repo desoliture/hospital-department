@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    <div th:fragment="assignment">
+        <table class="table table-bordered" th:with="cur_url=${#httpServletRequest.requestURI.replace('http://localhost:8080', '')}">
+            <tbody>
+            <tr th:if="${!cur_url.contains('remove')}">
+                <th class="align-middle">
+                    <p class="text-body lead">Patient</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.patient.firstName + ' ' + as.patient.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/users/{id}(id=${as.patient.id})}">explore</a>
+                </th>
+            </tr>
+            <tr th:if="${cur_url.contains('remove')}">
+                <th class="align-middle">
+                    <p class="text-body lead">Patient</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${as.patient.firstName + ' ' + as.patient.lastName + ' | ' + as.patient.email}"/>
+                </th>
+            </tr>
+
+            <tr th:if="${as.assigner != null && !cur_url.contains('remove')}">
+                <th class="align-middle">
+                    <p class="text-body lead">Assigner</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.assigner.firstName + ' ' + as.assigner.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/users/{id}(id=${as.assigner.id})}">explore</a>
+                </th>
+            </tr>
+            <tr th:if="${as.assigner != null && cur_url.contains('remove')}">
+                <th class="align-middle">
+                    <p class="text-body lead">Assigner</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${as.assigner.firstName + ' ' + as.assigner.lastName + ' | ' + as.assigner.email}"/>
+                </th>
+            </tr>
+
+            <tr th:if="${as.assigned != null && !cur_url.contains('remove')}">
+                <th class="align-middle">
+                    <p class="text-body lead">Assigned to</p>
+                </th>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.assigned.firstName + ' ' + as.assigned.lastName}"/>
+                </th>
+                <th class="align-middle">
+                    <a class="btn btn-light text-body lead" th:href="@{/users/{id}(id=${as.assigned.id})}">explore</a>
+                </th>
+            </tr>
+            <tr th:if="${as.assigned != null && cur_url.contains('remove')}">
+                <th class="align-middle">
+                    <p class="text-body lead">Assigned to</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${as.assigned.firstName + ' ' + as.assigned.lastName + ' | ' + as.assigned.email}"/>
+                </th>
+            </tr>
+
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Creation date</p>
+                </th>
+                <th colspan="2" class="align-middle">
+                    <p class="text-body lead" th:text="${#temporals.format(as.creationDate, 'dd-MM-yyyy HH:mm')}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Assigned date</p>
+                </th>
+                <th colspan="2" class="align-middle">
+                    <p class="text-body lead" th:text="${#temporals.format(as.assignmentDate, 'dd-MM-yyyy HH:mm')}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead" th:text="${as.assgType.name()}"/>
+                </th>
+                <th colspan="2" class="align-middle">
+                    <p class="text-body lead" th:text="${as.description}"/>
+                </th>
+            </tr>
+            <tr>
+                <th class="align-middle">
+                    <p class="text-body lead">Status</p>
+                </th>
+
+                <th th:if="${!as.completed && current_date > as.assignmentDate}" colspan="2" class="align-middle table-danger">
+                    <p class="text-body lead">Expired!</p>
+                </th>
+                <th th:if="${!as.completed && current_date < as.assignmentDate}" colspan="2" class="align-middle table-active">
+                    <p class="text-body lead">Planned</p>
+                    <a th:if="${as.assigned.email == current_logged_in.email}"
+                       class="btn btn-light text-body lead mt-3" th:href="@{/assignments/{id}/hold(id=${as.id})}">Hold</a>
+                </th>
+                <th th:if="${as.completed}" colspan="2" class="align-middle table-info">
+                    <p class="text-body lead">finished</p>
+                </th>
+            </tr>
+            <tr th:if="${as.completed}">
+                <th class="align-middle">
+                    <p class="text-body lead">Conclusion</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${as.conclusion}"/>
+                </th>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

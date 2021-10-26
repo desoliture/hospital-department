@@ -7,23 +7,22 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <title>My patients</title>
+    <title>Unarchiving user</title>
 </head>
 <body>
-<!-- Nav bar -->
-<div th:insert="fragments/nav-bar-fragment"/>
 
-<div class="container w-50 text-center mt-4" th:if="${!patients.isEmpty()}">
-    <h5 class="text-info mb-4">My patients</h5>
+<div class="container w-50 text-center mt-4">
+    <h5 class="text-warning mb-4">Are you sure?</h5>
+    <form th:action="@{/users/unarchive}" th:method="post" th:object="${user_to_unarchive}">
 
-    <div th:each="u: ${patients}">
-        <div th:insert="fragments/user-table-fragment"/>
-        <hr class="my-4">
-    </div>
-</div>
+        <input type="text" name="id" th:value="${user_to_unarchive.id}" style="display: none">
+        <input type="text" name="previous_url" th:value="${previous_url}" style="display: none">
 
-<div class="container w-50 text-center mt-4" th:if="${patients.isEmpty()}">
-    <h5 class="text-primary mb-4">You have no patients yet!</h5>
+        <div th:insert="fragments/user-table-fragment" th:with="u=${user_to_unarchive}"/>
+
+        <a th:href="@{{previous}(previous=${previous_url})}" class="btn btn-outline-warning btn-block mt-2 mb-1">Deny</a>
+        <button type="submit" class="btn btn-outline-danger btn-block mb-4">Unarchive</button>
+    </form>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

@@ -25,6 +25,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Query("select u from User u join Assignment a on a.patient.id = u.id join User d on d.id = a.assigned.id where d.id = ?1")
     Set<User> getAllDoctorsPatients(Integer id);
 
+    @Query("select u from User u join Assignment a on a.patient.id = u.id join User d on d.id = a.assigned.id where d.id = ?1 and u.active = true")
+    Set<User> getAllDoctorsActivePatients(Integer id);
+
     @Modifying
     @Query("update User u set u.firstName = ?1, u.lastName = ?2," +
             "u.email = ?3, u.pass = ?4," +
