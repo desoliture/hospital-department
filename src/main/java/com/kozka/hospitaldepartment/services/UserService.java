@@ -96,7 +96,7 @@ public class UserService {
     }
 
     public List<Assignment> getHealthCardFor(User user) {
-        return assgService.getUserMedCard(user.getId());
+        return assgService.getHealthCardFor(user);
     }
 
     public Set<User> getAllPatientsForDoctor(User user) {

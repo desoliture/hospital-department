@@ -66,16 +66,6 @@ public class IndexController {
         return "patient/doctors";
     }
 
-    @GetMapping("/health-card")
-    public String getHealthCard(Model model) {
-        var user = userService.getCurrentLoggedUser();
-        var healthCard = userService.getHealthCardFor(user);
-
-        model.addAttribute("current_logged_in", user);
-        model.addAttribute("health_card", healthCard);
-        return "patient/health-card";
-    }
-
     @GetMapping("/users/{id}")
     public String getUser(
             @PathVariable Integer id,
@@ -432,5 +422,15 @@ public class IndexController {
         userService.unArchive(id);
 
         return "redirect:" + previousUrl;
+    }
+
+    @GetMapping("/health-card")
+    public String getHealthCard(Model model) {
+        var user = userService.getCurrentLoggedUser();
+        var healthCard = userService.getHealthCardFor(user);
+
+        model.addAttribute("current_logged_in", user);
+        model.addAttribute("health_card", healthCard);
+        return "patient/health-card";
     }
 }

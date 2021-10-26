@@ -17,14 +17,6 @@ public class AssignmentService {
     @Autowired
     AssignmentRepository assgRepo;
 
-    public List<Assignment> getUserMedCard(int id) {
-        var assgs =
-                assgRepo.getAssignmentsByPatientId(id);
-        assgs.sort(Assignment::compareTo);
-
-        return assgs;
-    }
-
     public List<Assignment> getAll() {
         return assgRepo.findAll();
     }
@@ -58,5 +50,9 @@ public class AssignmentService {
 
     public void remove(Integer id) {
         assgRepo.deleteById(id);
+    }
+
+    public List<Assignment> getHealthCardFor(User user) {
+        return assgRepo.getHealthCardForUserById(user.getId());
     }
 }
