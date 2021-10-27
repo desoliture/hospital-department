@@ -25,9 +25,9 @@
         <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${u.id})}">Edit</a>
         <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/remove(id=${u.id})}">Remove</a>
         <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-light btn-block text-body lead mt-3"
-           th:href="@{/users/{id}/health-card(id=${explored_user.id})}">Health card</a>
+           th:href="@{/users/{id}/health-card(id=${u.id})}">Health card</a>
+        <hr class="my-4">
     </div>
-    <hr class="my-4">
 </div>
 </div>
 

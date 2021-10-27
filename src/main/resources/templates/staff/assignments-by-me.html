@@ -18,7 +18,7 @@
 
     <div th:each="as: ${assignments}">
         <div th:insert="fragments/assignments-fragment"/>
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/edit(id=${as.id})}">Edit</a>
+        <a th:if="${!as.completed}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/edit(id=${as.id})}">Edit</a>
         <a th:if="${!as.completed}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/remove(id=${as.id})}">Remove</a>
         <hr class="my-4">
     </div>
