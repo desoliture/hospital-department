@@ -7,6 +7,9 @@ import com.kozka.hospitaldepartment.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,12 +22,19 @@ import java.util.stream.Collectors;
  * @author Kozka Ivan
  */
 @Service
-public class UserService {
+public class UserService implements UserDetailsService {
     @Autowired
     UserRepository userRepo;
 
     @Autowired
     AssignmentService assgService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
+
+    public String encodePass(String pass) {
+        return passwordEncoder.encode(pass);
+    }
 
     public List<User> getAllDoctors() {
         return userRepo.getUsersByUserRole(UserRole.DOCTOR);
@@ -143,5 +153,13 @@ public class UserService {
     public void unArchive(User u) {
         u.setActive(true);
         userRepo.save(u);
+    }
+
+    /**
+     * Email being used as username
+     */
+    @Override
+    public UserDetails loadUserByUsername(String userName) throws UsernameNotFoundException {
+        return userRepo.getUserByEmail(userName);
     }
 }

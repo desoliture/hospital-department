@@ -19,12 +19,12 @@
 
         <div class="form-group m-2 mb-3">
             <label for="pat" class="mb-1 lead">Patient</label>
-            <input id="pat" readonly type="text" th:field="*{patient}" th:value="${assg_to_hold.patient.toStringLight()}">
+            <input id="pat" class="form-control" readonly type="text" th:field="*{patient}" th:value="${assg_to_hold.patient.toStringLight()}">
         </div>
 
         <div class="form-group m-2 mb-3">
             <label for="at" class="mb-1 lead">Assignment type</label>
-            <input id="at" readonly type="text" th:field="*{assgType}">
+            <input id="at" class="form-control" readonly type="text" th:field="*{assgType}">
         </div>
 
         <div class="form-group m-2 mb-3">

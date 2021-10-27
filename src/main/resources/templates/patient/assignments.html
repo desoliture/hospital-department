@@ -36,6 +36,11 @@
     </div>
 </div>
 
+<div th:if="${all_assignments.isEmpty() && current_logged_in.userRole.name() == 'ADMIN'}" class="container w-50 text-center mt-4">
+    <h5 class="text-warning mb-4">No assignments yet!</h5>
+    <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-info lead mb-3" th:href="@{/assignments/add}">Add assignment</a>
+</div>
+
 <div th:if="${assignments.isEmpty() && current_logged_in.userRole.name() == 'PATIENT'}" class="container w-50 text-center mt-4">
     <h5 class="text-primary mb-4">No assignments yet!</h5>
 </div>

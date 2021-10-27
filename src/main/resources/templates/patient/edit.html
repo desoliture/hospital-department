@@ -31,7 +31,7 @@
         </div>
         <div class="form-group m-2 mb-3">
             <label for="pass" class="mb-1 lead">Password</label>
-            <input id="pass" class="form-control" type="text" th:field="*{pass}">
+            <input id="pass" class="form-control" type="password" th:field="*{pass}">
         </div>
         <div th:if="${editing.userRole.name() == 'PATIENT'}" class="form-group m-2 mb-3">
             <label for="birth" class="mb-1 lead">Birth</label>

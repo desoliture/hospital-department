@@ -17,6 +17,9 @@
     <h5 class="text-info mb-4">Personal data</h5>
     <div th:insert="fragments/user-table-fragment" th:with="u=${explored_user}"/>
     <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${explored_user.id})}">Edit</a>
+    <a th:if="${current_logged_in.userRole.name() == 'ADMIN'
+    || current_logged_in.userRole.name() == 'DOCTOR'
+    || current_logged_in.userRole.name() == 'NURSE'}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/health-card(id=${explored_user.id})}">Health card</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

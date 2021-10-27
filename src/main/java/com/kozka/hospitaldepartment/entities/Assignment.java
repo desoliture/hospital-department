@@ -24,33 +24,33 @@ public class Assignment implements Comparable<Assignment> {
     Integer id;
 
     @OneToOne
-    @JoinColumn(name = "pat_id")
+    @JoinColumn(name = "pat_id", nullable = false)
     User patient;
 
     @OneToOne
-    @JoinColumn(name = "assigner_id")
+    @JoinColumn(name = "assigner_id", nullable = false)
     User assigner;
 
     @OneToOne
-    @JoinColumn(name = "assigned_id")
+    @JoinColumn(name = "assigned_id", nullable = false)
     User assigned;
 
-    @Column(name = "assg_type")
+    @Column(name = "assg_type", nullable = false)
     @Enumerated(value = EnumType.STRING)
     AssignmentType assgType;
 
-    @Column(name = "descr")
+    @Column(name = "descr", nullable = false)
     String description;
 
-    @Column
+    @Column(nullable = false)
     Boolean completed;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Column(name = "assg_date")
+    @Column(name = "assg_date", nullable = false)
     LocalDateTime assignmentDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
-    @Column(name = "creation_date")
+    @Column(name = "creation_date", nullable = false)
     LocalDateTime creationDate;
 
     @Column

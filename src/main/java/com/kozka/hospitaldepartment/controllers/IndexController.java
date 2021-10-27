@@ -7,6 +7,7 @@ import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -52,7 +53,7 @@ public class IndexController {
         model.addAttribute("current_logged_in", user);
         model.addAttribute("assignments", assgs);
         model.addAttribute("all_assignments", allAssgs);
-        model.addAttribute("current_date", LocalDateTime.now().plusDays(1));
+        model.addAttribute("current_date", LocalDateTime.now());
         return "patient/assignments";
     }
 
@@ -100,6 +101,9 @@ public class IndexController {
         var current = userService.getCurrentLoggedUser();
         var edited = userService.getUserById(user.getId());
 
+        if (user.getPass() == null || user.getPass().equals(""))
+            user.setPass(edited.getPass());
+
         if (current.getId().equals(edited.getId())) {
 
             if (!edited.getEmail().equals(user.getEmail())) {
@@ -107,6 +111,12 @@ public class IndexController {
                 SecurityContextHolder.clearContext();
             }
         }
+
+        user.setPass(
+                userService.encodePass(
+                        user.getPass()
+                )
+        );
 
         userService.update(user);
 
@@ -264,6 +274,7 @@ public class IndexController {
     }
 
     @GetMapping("/patients")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String getAllPatients(Model model) {
         var patients = userService.getAllActivePatients();
         var current = userService.getCurrentLoggedUser();
@@ -275,6 +286,7 @@ public class IndexController {
     }
 
     @GetMapping("/patients/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String addPatient(
             Model model
     ) {
@@ -285,6 +297,7 @@ public class IndexController {
     }
 
     @GetMapping("/doctors/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String addDoctor(
             Model model
     ) {
@@ -296,12 +309,18 @@ public class IndexController {
     }
 
     @PostMapping("/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String addUser(
             @ModelAttribute("new_user") User user,
             @ModelAttribute("user_role")UserRole userRole
     ) {
         user.setActive(true);
         user.setUserRole(userRole);
+        user.setPass(
+                userService.encodePass(
+                        user.getPass()
+                )
+        );
 
         userService.save(user);
 
@@ -310,6 +329,7 @@ public class IndexController {
 
 
     @GetMapping("/assignments/{id}/remove")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DOCTOR')")
     public String removeAssignment(
             @PathVariable("id") Assignment assignment,
             Model model,
@@ -325,6 +345,7 @@ public class IndexController {
     }
 
     @PostMapping("assignments/remove")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DOCTOR')")
     public String removeAssignment(
             @ModelAttribute Integer id,
             @ModelAttribute("previous_url") String previousUrl
@@ -335,6 +356,7 @@ public class IndexController {
     }
 
     @GetMapping("/users/{id}/remove")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String removeUser(
             @PathVariable("id") User user,
             Model model,
@@ -356,6 +378,7 @@ public class IndexController {
     }
 
     @PostMapping("/users/remove")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String removeUser(
             @ModelAttribute("id") Integer id,
             @ModelAttribute("previous_url") String previousUrl
@@ -366,6 +389,7 @@ public class IndexController {
     }
 
     @GetMapping("/archive")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String getArchive(Model model) {
         model.addAttribute("current_logged_in",
                 userService.getCurrentLoggedUser());
@@ -374,6 +398,7 @@ public class IndexController {
     }
 
     @GetMapping("/archive/patients")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String getArchivedPatients(Model model) {
         var users = userService.getAllInactivePatients();
 
@@ -384,6 +409,7 @@ public class IndexController {
     }
 
     @GetMapping("/archive/doctors")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String getArchivedDoctors(Model model) {
         var users = userService.getAllInactiveDoctors();
 
@@ -394,6 +420,7 @@ public class IndexController {
     }
 
     @GetMapping("/users/{id}/unarchive")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String unarchiveUser(
             @PathVariable("id") User user,
             Model model,
@@ -415,6 +442,7 @@ public class IndexController {
     }
 
     @PostMapping("/users/unarchive")
+    @PreAuthorize("hasAuthority('ADMIN')")
     public String unarchiveUser(
             @ModelAttribute("id") Integer id,
             @ModelAttribute("previous_url") String previousUrl
@@ -431,6 +459,20 @@ public class IndexController {
 
         model.addAttribute("current_logged_in", user);
         model.addAttribute("health_card", healthCard);
+        return "patient/health-card";
+    }
+
+    @GetMapping("/users/{id}/health-card")
+    public String getHealthCard(
+            Model model,
+            @PathVariable("id") User patient
+    ) {
+        var user = userService.getCurrentLoggedUser();
+        var healthCard = userService.getHealthCardFor(patient);
+
+        model.addAttribute("current_logged_in", user);
+        model.addAttribute("health_card", healthCard);
+        model.addAttribute("patient", patient);
         return "patient/health-card";
     }
 }

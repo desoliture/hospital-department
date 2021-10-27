@@ -13,8 +13,20 @@
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
-<div class="container w-50 text-center mt-4">
+<div class="container w-50 text-center mt-4" th:if="${current_logged_in.userRole == 'ADMIN'
+ || current_logged_in.userRole == 'DOCTOR'
+ || current_logged_in.userRole == 'NURSE'}" th:with="u=${patient}">
+    <h5 class="text-info mb-4">Patient</h5>
+    <div th:insert="fragments/user-table-fragment"/>
+</div>
+
+<div class="container w-50 text-center mt-4" th:if="${health_card.isEmpty()}">
+    <h5 class="text-info mb-4">Health card is empty!</h5>
+</div>
+
+<div class="container w-50 text-center mt-4" th:if="${!health_card.isEmpty()}">
     <h5 class="text-info mb-4">Health card</h5>
+
 
     <div th:each="as: ${health_card}">
 
