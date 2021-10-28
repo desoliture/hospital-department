@@ -55,6 +55,13 @@
                     <p class="text-body lead" th:text="${u.specialization.namePar()}"/>
                 </th>
             </tr>
+            <tr th:if="${u.userRole.name() == 'DOCTOR' || u.userRole.name() == 'NURSE'}">
+                <th class="align-middle">
+                    <p class="text-body lead">Number of patients</p>
+                </th>
+                <th class="align-middle" colspan="2">
+                    <p class="text-body lead" th:text="${num_of_pats_map.get(u.id)}"/>
+                </th>
             </tr>
             </tbody>
         </table>

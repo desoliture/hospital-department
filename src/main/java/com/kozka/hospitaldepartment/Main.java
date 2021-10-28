@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
  */
 public class Main {
     public static void main(String[] args) {
-        PasswordEncoder e = new BCryptPasswordEncoder(8);
-        System.out.println(e.encode("123"));
+        System.out.println("Ivan Kozka".compareTo("a a"));
     }
 }

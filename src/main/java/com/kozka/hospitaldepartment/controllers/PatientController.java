@@ -9,6 +9,9 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Comparator;
 
 /**
  * @author Kozka Ivan
@@ -22,9 +25,25 @@ public class PatientController {
 
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
-    public String getAllPatients(Model model) {
+    public String getAllPatients(
+            @RequestParam(
+                    value = "or",
+                    required = false,
+                    defaultValue = ""
+            ) String order,
+            Model model
+    ) {
         var patients = userService.getAllActivePatients();
         var current = userService.getCurrentLoggedUser();
+
+        switch (order) {
+            case "al":
+                patients.sort(Comparator.comparing(User::getFullName).reversed());
+                break;
+            case "br":
+                patients.sort(Comparator.comparing(User::getBirth));
+                break;
+        }
 
         model.addAttribute("patients", patients);
         model.addAttribute("current_logged_in", current);

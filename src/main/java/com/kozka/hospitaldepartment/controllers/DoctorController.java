@@ -9,6 +9,11 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import java.util.Comparator;
+import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * @author Kozka Ivan
@@ -21,12 +26,59 @@ public class DoctorController {
     private final UserService userService;
 
     @GetMapping
-    public String getDoctors(Model model) {
-        var doctors = userService.getAllActiveDoctorsAndNurses();
+    public String getDoctors(
+            Model model,
+            @RequestParam(
+                    value = "or",
+                    required = false,
+                    defaultValue = ""
+            ) String order,
+            @RequestParam(
+                    value = "sts",
+                    required = false,
+                    defaultValue = ""
+            ) String stuffToShow
+    ) {
+        List<User> doctors;
         var current = userService.getCurrentLoggedUser();
+
+        switch (stuffToShow) {
+            case "doc":
+                doctors = userService.getAllActiveDoctors();
+                break;
+            case "nur":
+                doctors = userService.getAllActiveNurses();
+                break;
+            default:
+                doctors = userService.getAllActiveDoctorsAndNurses();
+                break;
+        }
+
+        var numOfPatsMap = doctors.stream().collect(
+                Collectors.toMap(
+                        User::getId,
+                        d -> userService.getAllActivePatientsForDoctor(d).size()
+                )
+        );
+
+        switch (order) {
+            case "al":
+                doctors.sort(Comparator.comparing(User::getFullName));
+                break;
+            case "spec":
+                doctors.removeIf(u -> u.getUserRole() == UserRole.NURSE);
+                doctors.sort(Comparator.comparing(User::getFullName).reversed());
+                break;
+            case "nop":
+                doctors.sort((d1, d2) ->
+                    numOfPatsMap.get(d2.getId()).compareTo(numOfPatsMap.get(d1.getId()))
+                );
+                break;
+        }
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("doctors", doctors);
+        model.addAttribute("num_of_pats_map", numOfPatsMap);
         return "patient/doctors";
     }
 

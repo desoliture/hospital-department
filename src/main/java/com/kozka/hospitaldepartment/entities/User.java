@@ -11,6 +11,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -32,7 +33,6 @@ public class User implements UserDetails {
     Integer id;
 
     @Column(nullable = false, unique = true)
-//    @NotNull(message = "Please enter the email")
     @NotBlank(message = "Please enter the email")
     String email;
 
@@ -62,7 +62,6 @@ public class User implements UserDetails {
 
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
-//    @NotNull(message = "Birth can`t be empty")
     LocalDate birth;
 
     public User(String email, String pass,
@@ -116,5 +115,9 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return active;
+    }
+
+    public String getFullName() {
+        return firstName + lastName;
     }
 }

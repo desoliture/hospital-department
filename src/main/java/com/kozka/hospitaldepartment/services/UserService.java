@@ -50,6 +50,11 @@ public class UserService implements UserDetailsService {
                 .getUsersByUserRoleAndActiveIsFalse(UserRole.DOCTOR);
     }
 
+    public List<User> getAllActiveNurses() {
+        return userRepo
+                .getUsersByUserRoleAndActiveIsTrue(UserRole.NURSE);
+    }
+
     public String getCurrentAuthEmail() {
         String email;
         Object principal = SecurityContextHolder.getContext().getAuthentication().getPrincipal();

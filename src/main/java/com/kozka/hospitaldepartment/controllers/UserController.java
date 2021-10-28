@@ -131,7 +131,7 @@ public class UserController {
             errors.put("email", "Email already taken!");
         }
 
-        if (bindingResult.hasErrors()) {
+        if (!errors.isEmpty()) {
             model.addAttribute("new_user", user);
             model.addAttribute("current_logged_in",
                     userService.getCurrentLoggedUser());
