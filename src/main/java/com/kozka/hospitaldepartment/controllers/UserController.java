@@ -106,13 +106,13 @@ public class UserController {
             BindingResult bindingResult,
             Model model
     ) {
+        var errors = ControllerUtil.getErrorsMap(bindingResult);
 
         if (bindingResult.hasFieldErrors("userRole")) {
             model.addAttribute("new_user", user);
             model.addAttribute("current_logged_in",
                     userService.getCurrentLoggedUser());
 
-            var errors = ControllerUtil.getErrorsMap(bindingResult);
             model.addAttribute("errors_map", errors);
 
             return "admin/users-add-role";
@@ -127,12 +127,15 @@ public class UserController {
                     )
             );
 
+        if (userService.isExist(user.getEmail())) {
+            errors.put("email", "Email already taken!");
+        }
+
         if (bindingResult.hasErrors()) {
             model.addAttribute("new_user", user);
             model.addAttribute("current_logged_in",
                     userService.getCurrentLoggedUser());
 
-            var errors = ControllerUtil.getErrorsMap(bindingResult);
             model.addAttribute("errors_map", errors);
 
             return "admin/users-add";
