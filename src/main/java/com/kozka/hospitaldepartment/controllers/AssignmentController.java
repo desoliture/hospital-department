@@ -7,6 +7,11 @@ import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
 import com.kozka.hospitaldepartment.utils.ControllerUtil;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -17,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Map;
 
@@ -31,51 +37,72 @@ public class AssignmentController {
     private final AssignmentService assignmentService;
 
     @GetMapping
-    public String getAssignments(Model model) {
+    public String getAssignments(
+            Model model,
+            @PageableDefault(
+                    sort = {"assignmentDate"},
+                    direction = Sort.Direction.DESC,
+                    size = 1
+            ) Pageable pageable
+    ) {
         var user = userService.getCurrentLoggedUser();
+        Page<Assignment> page;
 
-        var assgs = assignmentService.getAllForPatient(user);
-        var allAssgs = assignmentService.getAll();
-
-        assgs.sort(Assignment::compareTo);
-        allAssgs.sort(Assignment::compareTo);
+        if (user.getUserRole() == UserRole.ADMIN) {
+            page = assignmentService.getAll(pageable);
+        }
+        else if (user.getUserRole() == UserRole.PATIENT) {
+            page = assignmentService.getAllForPatient(pageable, user);
+        }
+        else {
+            page = null;
+        }
 
         model.addAttribute("current_logged_in", user);
-        model.addAttribute("assignments", assgs);
-        model.addAttribute("all_assignments", allAssgs);
+        model.addAttribute("page", page);
         model.addAttribute("current_date", LocalDateTime.now());
         return "patient/assignments";
     }
 
     @GetMapping("/for-me")
-    public String getAssignmentsForMe(Model model) {
+    public String getAssignmentsForMe(
+            @PageableDefault(
+                    sort = {"assignmentDate"},
+                    direction = Sort.Direction.DESC,
+                    size = 1
+            ) Pageable pageable,
+            Model model
+    ) {
         var current = userService.getCurrentLoggedUser();
 
         if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
 
-        var assgs = assignmentService.getAllFor(current);
-
-        assgs.sort(Comparator.comparing(Assignment::getAssignmentDate));
+        Page<Assignment> page = assignmentService.getAllForDoctor(pageable, current);
 
         model.addAttribute("current_logged_in", current);
-        model.addAttribute("assignments", assgs);
+        model.addAttribute("page", page);
         model.addAttribute("current_date", LocalDateTime.now());
 
         return "staff/assignments-for-me";
     }
 
     @GetMapping("/by-me")
-    public String getAssignmentsByMe(Model model) {
+    public String getAssignmentsByMe(
+            @PageableDefault(
+                    sort = {"assignmentDate"},
+                    direction = Sort.Direction.DESC,
+                    size = 1
+            ) Pageable pageable,
+            Model model
+    ) {
         var current = userService.getCurrentLoggedUser();
 
         if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
 
-        var assgs = assignmentService.getAllBy(current);
-
-        assgs.sort(Comparator.comparing(Assignment::getAssignmentDate));
+        Page<Assignment> page = assignmentService.getAllByDoctor(pageable, current);
 
         model.addAttribute("current_logged_in", current);
-        model.addAttribute("assignments", assgs);
+        model.addAttribute("page", page);
         model.addAttribute("current_date", LocalDateTime.now());
 
         return "staff/assignments-by-me";

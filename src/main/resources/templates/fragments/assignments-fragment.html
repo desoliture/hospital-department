@@ -68,7 +68,7 @@
                 </th>
             </tr>
 
-            <tr>
+            <tr th:if="${current_logged_in.userRole.name() == 'ADMIN'}">
                 <th class="align-middle">
                     <p class="text-body lead">Creation date</p>
                 </th>

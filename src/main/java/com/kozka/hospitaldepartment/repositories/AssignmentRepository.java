@@ -1,28 +1,32 @@
 package com.kozka.hospitaldepartment.repositories;
 
 import com.kozka.hospitaldepartment.entities.*;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.repository.PagingAndSortingRepository;
+import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * @author Kozka Ivan
  */
-public interface AssignmentRepository extends JpaRepository<Assignment, Integer> {
+@Repository
+public interface AssignmentRepository extends PagingAndSortingRepository<Assignment, Integer> {
     List<Assignment> getAssignmentsByPatientId(Integer index);
     List<Assignment> getAllByPatient(User user);
     List<Assignment> getAllByAssigned(User user);
     List<Assignment> getAllByAssigner(User user);
 
-    /*
-    select a.* from assignments as a
-    join users u on u.user_id = a.pat_id
-    where a.completed = true and u.user_id = 6
-    order by a.assg_date
-     */
+    @Query("select a from Assignment a")
+    List<Assignment> getAll();
+
     @Query("select a from Assignment a join User u on a.patient.id = u.id " +
             "where a.completed = true and u.id =?1 order by a.assignmentDate")
     List<Assignment> getHealthCardForUserById(Integer id);

@@ -13,10 +13,34 @@
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
-<div th:if="${!assignments.isEmpty()}" class="container w-50 text-center mt-4">
+<div th:if="${!page.isEmpty()}" class="container w-50 text-center mt-4">
     <h5 class="text-info mb-4">Assignments</h5>
 
-    <div th:each="as: ${assignments}">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination pagination-sm justify-content-center">
+            <li class="page-item disabled">
+                <span class="page-link">Pages</span>
+            </li>
+            <li th:class="'page-item' + ${(curN == (p - 1) ? ' active' : '')}" th:each="p: ${#numbers.sequence(1, page.getTotalPages())}"
+                th:with="curN=${page.number}">
+
+                <a th:text="${p}" class="page-link" th:href="@{'/assignments/by-me?page=' + ${p - 1} + '&size=' + ${page.size}}"/>
+            </li>
+        </ul>
+        <ul class="pagination pagination-sm justify-content-center" th:with="sizeList=${ {1,2,5} }">
+            <li class="page-item disabled">
+                <span class="page-link">Size</span>
+            </li>
+            <li th:class="'page-item' + ${(curS == s ? ' active' : '')}"
+                th:each="s: ${sizeList}"
+                th:with="curS=${page.size}">
+
+                <a th:text="${s}" class="page-link" th:href="@{'/assignments/by-me?page=' + ${page.number} + '&size=' + ${s}}"/>
+            </li>
+        </ul>
+    </nav>
+
+    <div th:each="as: ${page}">
         <div th:insert="fragments/assignments-fragment"/>
         <a th:if="${!as.completed}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/edit(id=${as.id})}">Edit</a>
         <a th:if="${!as.completed}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/assignments/{id}/remove(id=${as.id})}">Remove</a>
@@ -24,7 +48,7 @@
     </div>
 </div>
 
-<div th:if="${assignments.isEmpty()}" class="container w-50 text-center mt-4">
+<div th:if="${page.isEmpty()}" class="container w-50 text-center mt-4">
     <h5 class="text-primary mb-4">No assignments yet!</h5>
 </div>
 
