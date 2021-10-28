@@ -3,14 +3,21 @@ package com.kozka.hospitaldepartment.controllers;
 import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.UserService;
+import com.kozka.hospitaldepartment.utils.ControllerUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
+import org.springframework.validation.MapBindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 /**
  * @author Kozka Ivan
@@ -78,14 +85,60 @@ public class UserController {
         return "redirect:/";
     }
 
+    @GetMapping("/add")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String addUser(
+            Model model
+    ) {
+        var user = new User();
+
+        model.addAttribute("new_user", user);
+        model.addAttribute("current_logged_in",
+                userService.getCurrentLoggedUser());
+
+        return "admin/users-add-role";
+    }
+
     @PostMapping("/add")
     @PreAuthorize("hasAuthority('ADMIN')")
     public String addUser(
-            @ModelAttribute("new_user") User user,
-            @ModelAttribute("user_role") UserRole userRole
+            @Valid @ModelAttribute("new_user") User user,
+            BindingResult bindingResult,
+            Model model
     ) {
+
+        if (bindingResult.hasFieldErrors("userRole")) {
+            model.addAttribute("new_user", user);
+            model.addAttribute("current_logged_in",
+                    userService.getCurrentLoggedUser());
+
+            var errors = ControllerUtil.getErrorsMap(bindingResult);
+            model.addAttribute("errors_map", errors);
+
+            return "admin/users-add-role";
+        }
+
+        if (user.getUserRole() == UserRole.PATIENT
+                && user.getBirth() == null)
+            bindingResult.addError(
+                    new FieldError(
+                            "new_user", "birth",
+                            "You must enter the birth date"
+                    )
+            );
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("new_user", user);
+            model.addAttribute("current_logged_in",
+                    userService.getCurrentLoggedUser());
+
+            var errors = ControllerUtil.getErrorsMap(bindingResult);
+            model.addAttribute("errors_map", errors);
+
+            return "admin/users-add";
+        }
+
         user.setActive(true);
-        user.setUserRole(userRole);
         user.setPass(
                 userService.encodePass(
                         user.getPass()

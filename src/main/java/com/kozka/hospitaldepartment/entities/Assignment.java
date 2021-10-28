@@ -1,9 +1,12 @@
 package com.kozka.hospitaldepartment.entities;
 
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import javax.persistence.*;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDateTime;
 
 /**
@@ -37,9 +40,13 @@ public class Assignment implements Comparable<Assignment> {
 
     @Column(name = "assg_type", nullable = false)
     @Enumerated(value = EnumType.STRING)
+    @NotNull(message = "Please chose the assignment type")
     AssignmentType assgType;
 
     @Column(name = "descr", nullable = false)
+    @NotBlank(message = "Please write the description")
+    @NotNull(message = "Please write the description")
+    @Length(max = 255, message = "Description is too long! Maximum is 255 chars")
     String description;
 
     @Column(nullable = false)
@@ -47,6 +54,7 @@ public class Assignment implements Comparable<Assignment> {
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "assg_date", nullable = false)
+    @NotNull(message = "Please choose the assignment date")
     LocalDateTime assignmentDate;
 
     @DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm")
@@ -54,6 +62,7 @@ public class Assignment implements Comparable<Assignment> {
     LocalDateTime creationDate;
 
     @Column
+    @Length(max = 2048, message = "Conclusion is too long! Maximum is 2048 chars")
     String conclusion;
 
     public Assignment(User patient, User assigner,

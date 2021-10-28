@@ -7,14 +7,18 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <title>My patients</title>
+    <title>Hold assignment</title>
 </head>
 <body>
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
-<div class="container w-50 text-center mt-4">
-    <h5 class="text-info mb-4">Add assignment</h5>
+<div class="container w-50 text-center mt-4" th:if="${assg_to_hold.assigned != current_logged_in}">
+    <h5 class="text-danger mb-4">Forbidden!</h5>
+</div>
+
+<div class="container w-50 text-center mt-4" th:if="${assg_to_hold.assigned == current_logged_in}">
+    <h5 class="text-info mb-4">Hold assignment</h5>
     <form th:action="@{/assignments/{id}/hold(id=${assg_to_hold.id})}" th:method="post" th:object="${assg_to_hold}">
 
         <div class="form-group m-2 mb-3">
@@ -32,9 +36,10 @@
             <input id="ds" readonly type="text" class="form-control" th:value="${assg_to_hold.description}" th:field="*{description}">
         </div>
 
-        <div class="form-group m-2 mb-3">
+        <div class="form-group m-2 mb-3" th:with="err=${conc_error == null}">
             <label for="ad" class="mb-1 lead">Conclusion</label>
-            <input id="ad" class="form-control" placeholder="Conclusion" type="text" th:field="*{conclusion}">
+            <input id="ad" th:class="'form-control' + ${err ? '' : ' is-invalid'}" placeholder="Conclusion" type="text" th:field="*{conclusion}">
+            <div class="invalid-feedback" th:if="err" th:text="${conc_error}"/>
         </div>
 
         <input hidden class="form-control" type="text" th:field="*{assigner}">

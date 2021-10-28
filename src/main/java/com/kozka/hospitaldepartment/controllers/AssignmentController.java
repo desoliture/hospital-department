@@ -2,17 +2,23 @@ package com.kozka.hospitaldepartment.controllers;
 
 import com.kozka.hospitaldepartment.entities.Assignment;
 import com.kozka.hospitaldepartment.entities.AssignmentType;
+import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
+import com.kozka.hospitaldepartment.utils.ControllerUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.time.LocalDateTime;
 import java.util.Comparator;
+import java.util.Map;
 
 /**
  * @author Kozka Ivan
@@ -44,6 +50,9 @@ public class AssignmentController {
     @GetMapping("/for-me")
     public String getAssignmentsForMe(Model model) {
         var current = userService.getCurrentLoggedUser();
+
+        if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
+
         var assgs = assignmentService.getAllFor(current);
 
         assgs.sort(Comparator.comparing(Assignment::getAssignmentDate));
@@ -58,6 +67,9 @@ public class AssignmentController {
     @GetMapping("/by-me")
     public String getAssignmentsByMe(Model model) {
         var current = userService.getCurrentLoggedUser();
+
+        if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
+
         var assgs = assignmentService.getAllBy(current);
 
         assgs.sort(Comparator.comparing(Assignment::getAssignmentDate));
@@ -89,11 +101,33 @@ public class AssignmentController {
 
     @PostMapping("/add")
     public String addAssignmentsPost(
-            @ModelAttribute("new_assignment") Assignment newAssg,
+            @Valid @ModelAttribute("new_assignment") Assignment newAssg,
+            BindingResult bindingResult,
             @ModelAttribute("pat-id") Integer patId,
             @ModelAttribute("asg-id-all") Integer asgIdAll,
-            @ModelAttribute("asg-id-doc") Integer asgIdDoc
+            @ModelAttribute("asg-id-doc") Integer asgIdDoc,
+            Model model
     ) {
+        if (bindingResult.hasErrors()) {
+            var allPatients = userService.getAllActivePatients();
+            var current = userService.getCurrentLoggedUser();
+            var patients = userService.getAllActivePatientsForDoctor(current);
+            var allDoctors = userService.getAllActiveDoctorsAndNurses();
+            var doctors = userService.getAllActiveDoctors();
+
+            model.addAttribute("current_logged_in", current);
+            model.addAttribute("patients", patients);
+            model.addAttribute("all_patients", allPatients);
+            model.addAttribute("all_doctors", allDoctors);
+            model.addAttribute("doctors", doctors);
+            model.addAttribute("new_assignment", newAssg);
+
+            var errors = ControllerUtil.getErrorsMap(bindingResult);
+            model.addAttribute("errors_map", errors);
+
+            return "staff/assignments-add";
+        }
+
         if (newAssg.getAssigner() == null)
             newAssg.setAssigner(userService.getCurrentLoggedUser());
 
@@ -125,28 +159,42 @@ public class AssignmentController {
             @PathVariable("id") Assignment assg,
             Model model
     ) {
-        assg.setId(id);
         var current = userService.getCurrentLoggedUser();
         var patients = userService.getAllActivePatientsForDoctor(current);
-        var doctors = userService.getAllActiveDoctorsAndNurses();
         var allPatients = userService.getAllActivePatients();
+        var doctors = userService.getAllActiveDoctors();
+        var allDoctors = userService.getAllActiveDoctorsAndNurses();
 
-
-        model.addAttribute("edited_assg", assg);
         model.addAttribute("current_logged_in", current);
         model.addAttribute("patients", patients);
-        model.addAttribute("doctors", doctors);
         model.addAttribute("all_patients", allPatients);
+        model.addAttribute("all_doctors", allDoctors);
+        model.addAttribute("doctors", doctors);
+        model.addAttribute("edited_assg", assg);
+
+        assg.setId(id);
+
         return "staff/assignments-edit";
     }
 
     @PostMapping("/{id}/edit")
     public String editAssignmentPost(
-            @ModelAttribute("edited_assg") Assignment edited,
+            @Valid @ModelAttribute("edited_assg") Assignment edited,
+            BindingResult bindingResult,
+            Model model,
             @PathVariable("id") Integer id,
             @ModelAttribute("pat-id") Integer patId,
-            @ModelAttribute("asg-id") Integer asgId
+            @ModelAttribute("asg-id-all") Integer asgIdAll,
+            @ModelAttribute("asg-id-doc") Integer asgIdDoc
     ) {
+        int asgId;
+        if (edited.getAssgType() == AssignmentType.PROCEDURE
+                || edited.getAssgType() == AssignmentType.MEDICINE)
+        {
+            asgId = asgIdAll;
+        }
+        else asgId = asgIdDoc;
+
         var patient = userService.getUserById(patId);
         var assigned = userService.getUserById(asgId);
 
@@ -154,12 +202,33 @@ public class AssignmentController {
         edited.setPatient(patient);
         edited.setAssigned(assigned);
 
+        if (bindingResult.hasErrors()) {
+            var current = userService.getCurrentLoggedUser();
+            var patients = userService.getAllActivePatientsForDoctor(current);
+            var allPatients = userService.getAllActivePatients();
+            var doctors = userService.getAllActiveDoctors();
+            var allDoctors = userService.getAllActiveDoctorsAndNurses();
+
+            model.addAttribute("current_logged_in", current);
+            model.addAttribute("patients", patients);
+            model.addAttribute("all_patients", allPatients);
+            model.addAttribute("all_doctors", allDoctors);
+            model.addAttribute("doctors", doctors);
+            model.addAttribute("edited_assg", edited);
+
+            var errorsMap = ControllerUtil.getErrorsMap(bindingResult);
+            model.addAttribute("errors_map", errorsMap);
+
+            return "staff/assignments-edit";
+        }
+
         assignmentService.update(edited);
 
         return "redirect:/assignments";
     }
 
     @GetMapping("/{id}/hold")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'NURSE')")
     public String holdAssignment(
             @PathVariable("id") Assignment assg,
             Model model
@@ -170,9 +239,20 @@ public class AssignmentController {
     }
 
     @PostMapping("/{id}/hold")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'NURSE')")
     public String holdAssignmentPost(
-            @ModelAttribute("assg_to_hold") Assignment assg
+            @ModelAttribute("assg_to_hold") Assignment assg,
+            Model model
     ) {
+        if (assg.getConclusion() == null
+                || assg.getConclusion().equals("")) {
+
+            model.addAttribute("conc_error", "Conclusion can`t be empty!");
+            model.addAttribute("assg_to_hold", assg);
+            model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
+            return "staff/assignments-hold";
+        }
+
         assg.setCompleted(true);
 
         assignmentService.update(assg);

@@ -16,6 +16,7 @@
 <div class="container w-50 text-center mt-4">
     <h5 class="text-info mb-4">Doctors</h5>
     <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-info lead mb-3" th:href="@{/doctors/add}">Add doctor</a>
+    <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-info lead mb-3" th:href="@{/doctors/add-nurse}">Add nurse</a>
 
     <div th:each="u: ${doctors}">
         <div th:insert="fragments/user-table-fragment"/>

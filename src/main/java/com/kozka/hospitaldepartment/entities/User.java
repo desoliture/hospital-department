@@ -6,6 +6,9 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Collection;
@@ -29,19 +32,25 @@ public class User implements UserDetails {
     Integer id;
 
     @Column(nullable = false, unique = true)
+//    @NotNull(message = "Please enter the email")
+    @NotBlank(message = "Please enter the email")
     String email;
 
     @Column(nullable = false)
+    @NotBlank(message = "Password can`t be empty")
     String pass;
 
     @Column(name = "first_name", nullable = false)
+    @NotBlank(message = "First name can`t be empty")
     String firstName;
 
     @Column(name = "last_name", nullable = false)
+    @NotBlank(message = "Last name can`t be empty")
     String lastName;
 
     @Column(name = "u_role", nullable = false)
     @Enumerated(value = EnumType.STRING)
+    @NotNull(message = "Please chose the user role")
     UserRole userRole;
 
     @Column(name = "spec")
@@ -53,6 +62,7 @@ public class User implements UserDetails {
 
     @Column
     @DateTimeFormat(pattern = "yyyy-MM-dd")
+//    @NotNull(message = "Birth can`t be empty")
     LocalDate birth;
 
     public User(String email, String pass,

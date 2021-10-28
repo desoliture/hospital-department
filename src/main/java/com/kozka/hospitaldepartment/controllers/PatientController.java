@@ -1,6 +1,7 @@
 package com.kozka.hospitaldepartment.controllers;
 
 import com.kozka.hospitaldepartment.entities.User;
+import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -36,9 +37,11 @@ public class PatientController {
     public String addPatient(
             Model model
     ) {
-        model.addAttribute("new_user", new User());
+        var user = new User();
+        user.setUserRole(UserRole.PATIENT);
+        model.addAttribute("new_user", user);
         model.addAttribute("current_logged_in",
                 userService.getCurrentLoggedUser());
-        return "admin/patients-add";
+        return "admin/users-add";
     }
 }

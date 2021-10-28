@@ -62,6 +62,11 @@ public class UserService implements UserDetailsService {
         return email;
     }
 
+    public User getCurrentLoggedUser() {
+        String email = getCurrentAuthEmail();
+        return userRepo.getUserByEmail(email);
+    }
+
     public List<User> getAllPatients() {
         return userRepo.getUsersByUserRole(UserRole.PATIENT);
     }
@@ -90,11 +95,6 @@ public class UserService implements UserDetailsService {
 
     public void deleteById(Integer id) {
         userRepo.deleteById(id);
-    }
-
-    public User getCurrentLoggedUser() {
-        String email = getCurrentAuthEmail();
-        return userRepo.getUserByEmail(email);
     }
 
     public List<User> getAllActiveDoctorsAndNurses() {
