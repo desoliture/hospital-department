@@ -58,6 +58,7 @@ public class PatientController {
 
         model.addAttribute("page", page);
         model.addAttribute("current_logged_in", current);
+        model.addAttribute("order", "or=" + order);
 
         return "admin/patients";
     }

@@ -62,7 +62,7 @@
                 th:with="curN=${page.number}">
 
                 <a th:text="${p}" class="page-link"
-                   th:href="@{'/patients?page=' + ${p - 1} + '&size=' + ${page.size}}"/>
+                   th:href="@{'/patients?page=' + ${p - 1} + '&size=' + ${page.size} + '&' + ${order}}"/>
             </li>
         </ul>
         <ul class="pagination pagination-sm justify-content-center" th:with="sizeList=${ {1,2,5} }">
@@ -73,7 +73,7 @@
                 th:each="s: ${sizeList}"
                 th:with="curS=${page.size}">
 
-                <a th:text="${s}" class="page-link" th:href="@{'/patients?page=' + ${page.number} + '&size=' + ${s}}"/>
+                <a th:text="${s}" class="page-link" th:href="@{'/patients?page=' + ${page.number} + '&size=' + ${s} + '&' + ${order}}"/>
             </li>
         </ul>
     </nav>
@@ -94,7 +94,7 @@
 </div>
 <div class="container w-50 text-center mt-4" th:if="${page.isEmpty() && page.number != 0}">
     <h5 class="text-warning mb-4">Wrong page!</h5>
-    <a class="btn btn-outline-warning lead mb-3" th:href="@{'/patients?page=0' + '&size=' + ${page.size}}">First page</a>
+    <a class="btn btn-outline-warning lead mb-3" th:href="@{'/patients?page=0' + '&size=' + ${page.size} + '&' + ${order}}">First page</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

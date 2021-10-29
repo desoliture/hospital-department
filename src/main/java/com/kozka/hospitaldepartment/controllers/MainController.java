@@ -83,6 +83,7 @@ public class MainController {
 
         model.addAttribute("current_logged_in", current);
         model.addAttribute("page", page);
+        model.addAttribute("order", "or=" + order);
 
         return "staff/my-patients";
     }
