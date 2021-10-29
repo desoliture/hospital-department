@@ -5,6 +5,10 @@ import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.repositories.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,6 +18,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -170,5 +175,23 @@ public class UserService implements UserDetailsService {
 
     public boolean isExist(String email) {
         return userRepo.getUserByEmail(email) != null;
+    }
+
+    public Page<User> getPageFor(List<User> users, Pageable pageable) {
+        List<User> list;
+
+        int pageSize = pageable.getPageSize();
+        int currentPage = pageable.getPageNumber();
+        int startItem = currentPage * pageSize;
+
+        if (users.size() < startItem) {
+            list = Collections.emptyList();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, users.size());
+            list = users.subList(startItem, toIndex);
+        }
+
+        return new PageImpl<User>(
+                list, PageRequest.of(currentPage, pageSize), users.size());
     }
 }

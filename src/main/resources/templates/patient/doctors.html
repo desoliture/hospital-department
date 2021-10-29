@@ -14,7 +14,7 @@
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
-<div class="container w-50 text-center mt-4">
+<div class="container w-50 text-center mt-4" th:if="${!page.isEmpty()}">
     <h5 class="text-info mb-4">Doctors</h5>
     <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-info lead mb-3"
        th:href="@{/doctors/add}">Add doctor</a>
@@ -63,7 +63,31 @@
         </div>
     </div>
 
-    <div th:each="u: ${doctors}">
+    <nav aria-label="Page navigation example">
+        <ul class="pagination pagination-sm justify-content-center">
+            <li class="page-item disabled">
+                <span class="page-link">Pages</span>
+            </li>
+            <li th:class="'page-item' + ${(curN == (p - 1) ? ' active' : '')}" th:each="p: ${#numbers.sequence(1, page.getTotalPages())}"
+                th:with="curN=${page.number}">
+
+                <a th:text="${p}" class="page-link" th:href="@{'/doctors?page=' + ${p - 1} + '&size=' + ${page.size}}"/>
+            </li>
+        </ul>
+        <ul class="pagination pagination-sm justify-content-center" th:with="sizeList=${ {1,2,5} }">
+            <li class="page-item disabled">
+                <span class="page-link">Size</span>
+            </li>
+            <li th:class="'page-item' + ${(curS == s ? ' active' : '')}"
+                th:each="s: ${sizeList}"
+                th:with="curS=${page.size}">
+
+                <a th:text="${s}" class="page-link" th:href="@{'/doctors?page=' + ${page.number} + '&size=' + ${s}}"/>
+            </li>
+        </ul>
+    </nav>
+
+    <div th:each="u: ${page}">
         <div th:insert="fragments/user-table-fragment"/>
         <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-light btn-block text-body lead mt-3"
            th:href="@{/users/{id}/edit(id=${u.id})}">Edit</a>
@@ -72,6 +96,14 @@
 
         <hr class="my-4">
     </div>
+</div>
+
+<div class="container w-50 text-center mt-4" th:if="${page.isEmpty() && page.number == 0}">
+    <h5 class="text-primary mb-4">No doctors yet!</h5>
+</div>
+<div class="container w-50 text-center mt-4" th:if="${page.isEmpty() && page.number != 0}">
+    <h5 class="text-warning mb-4">Wrong page!</h5>
+    <a class="btn btn-outline-warning lead mb-3" th:href="@{'/doctors?page=0' + '&size=' + ${page.size}}">First page</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

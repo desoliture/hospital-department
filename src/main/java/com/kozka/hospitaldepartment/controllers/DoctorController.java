@@ -4,6 +4,10 @@ import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
 import com.kozka.hospitaldepartment.services.UserService;
 import lombok.AllArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -37,7 +41,12 @@ public class DoctorController {
                     value = "sts",
                     required = false,
                     defaultValue = ""
-            ) String stuffToShow
+            ) String stuffToShow,
+            @PageableDefault(
+                    sort = {"assignmentDate"},
+                    direction = Sort.Direction.DESC,
+                    size = 1
+            ) Pageable pageable
     ) {
         List<User> doctors;
         var current = userService.getCurrentLoggedUser();
@@ -76,8 +85,10 @@ public class DoctorController {
                 break;
         }
 
+        Page<User> page = userService.getPageFor(doctors, pageable);
+
         model.addAttribute("current_logged_in", current);
-        model.addAttribute("doctors", doctors);
+        model.addAttribute("page", page);
         model.addAttribute("num_of_pats_map", numOfPatsMap);
         return "patient/doctors";
     }

@@ -48,8 +48,12 @@
     </div>
 </div>
 
-<div th:if="${page.isEmpty()}" class="container w-50 text-center mt-4">
+<div th:if="${page.isEmpty() && page.number == 0}" class="container w-50 text-center mt-4">
     <h5 class="text-primary mb-4">No assignments yet!</h5>
+</div>
+<div th:if="${page.isEmpty() && page.number != 0}" class="container w-50 text-center mt-4">
+    <h5 class="text-warning mb-4">Wrong page!</h5>
+    <a class="btn btn-outline-warning lead mb-3" th:href="@{'/assignments/by-me?page=0' + '&size=' + ${page.size}}">First page</a>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>

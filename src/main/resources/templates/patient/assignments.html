@@ -14,7 +14,8 @@
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
-<div class="container w-50 text-center mt-4" th:if="${current_logged_in.userRole.name() == 'PATIENT' || current_logged_in.userRole.name() == 'ADMIN'}">
+<div class="container w-50 text-center mt-4"
+     th:if="${(current_logged_in.userRole.name() == 'PATIENT' || current_logged_in.userRole.name() == 'ADMIN') && !page.isEmpty()}">
     <h5 class="text-info mb-4">Assignments</h5>
     <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-info lead mb-3"
        th:href="@{/assignments/add}">Add assignment</a>
@@ -24,10 +25,12 @@
             <li class="page-item disabled">
                 <span class="page-link">Pages</span>
             </li>
-            <li th:class="'page-item' + ${(curN == (p - 1) ? ' active' : '')}" th:each="p: ${#numbers.sequence(1, page.getTotalPages())}"
+            <li th:class="'page-item' + ${(curN == (p - 1) ? ' active' : '')}"
+                th:each="p: ${#numbers.sequence(1, page.getTotalPages())}"
                 th:with="curN=${page.number}">
 
-                <a th:text="${p}" class="page-link" th:href="@{'/assignments?page=' + ${p - 1} + '&size=' + ${page.size}}"/>
+                <a th:text="${p}" class="page-link"
+                   th:href="@{'/assignments?page=' + ${p - 1} + '&size=' + ${page.size}}"/>
             </li>
         </ul>
         <ul class="pagination pagination-sm justify-content-center" th:with="sizeList=${ {1,2,5} }">
@@ -38,7 +41,8 @@
                 th:each="s: ${sizeList}"
                 th:with="curS=${page.size}">
 
-                <a th:text="${s}" class="page-link" th:href="@{'/assignments?page=' + ${page.number} + '&size=' + ${s}}"/>
+                <a th:text="${s}" class="page-link"
+                   th:href="@{'/assignments?page=' + ${page.number} + '&size=' + ${s}}"/>
             </li>
         </ul>
     </nav>
@@ -53,15 +57,23 @@
     </div>
 </div>
 
-<div th:if="${current_logged_in.userRole.name() == 'ADMIN' && page?.isEmpty()}"
+
+<div th:if="${current_logged_in.userRole.name() == 'ADMIN' || current_logged_in.userRole.name() == 'PATIENT'}"
      class="container w-50 text-center mt-4">
-    <h5 class="text-warning mb-4">No assignments yet!</h5>
+
+    <div th:if="${page?.isEmpty() && page?.number == 0}">
+        <h5 class="text-primary mb-4">No assignments yet!</h5>
+        <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-primary lead mb-3"
+           th:href="@{/assignments/add}">Add assignment</a>
+    </div>
+
+    <div th:if="${page?.isEmpty() && page?.number != 0}">
+        <h5 class="text-warning mb-4">Wrong page!</h5>
+        <a class="btn btn-outline-warning lead mb-3" th:href="@{'/assignments?page=0' + '&size=' + ${page.size}}">First page</a>
+    </div>
+
 </div>
 
-<div th:if="${current_logged_in.userRole.name() == 'PATIENT' && page?.isEmpty()}"
-     class="container w-50 text-center mt-4">
-    <h5 class="text-primary mb-4">No assignments yet!</h5>
-</div>
 
 <div th:if="${current_logged_in.userRole.name() == 'DOCTOR'}" class="container w-50 text-center mt-4">
     <a class="btn btn-outline-primary" th:href="@{/assignments/add}">Create assignment</a>

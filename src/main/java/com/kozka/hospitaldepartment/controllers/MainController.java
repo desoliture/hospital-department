@@ -8,6 +8,10 @@ import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
@@ -56,6 +60,11 @@ public class MainController {
                     required = false,
                     defaultValue = ""
             ) String order,
+            @PageableDefault(
+                    sort = {"assignmentDate"},
+                    direction = Sort.Direction.DESC,
+                    size = 1
+            ) Pageable pageable,
             Model model
     ) {
         var current = userService.getCurrentLoggedUser();
@@ -70,8 +79,10 @@ public class MainController {
                 break;
         }
 
+        Page<User> page = userService.getPageFor(patients, pageable);
+
         model.addAttribute("current_logged_in", current);
-        model.addAttribute("patients", patients);
+        model.addAttribute("page", page);
 
         return "staff/my-patients";
     }
