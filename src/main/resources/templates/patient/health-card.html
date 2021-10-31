@@ -26,7 +26,10 @@
 
 <div class="container w-50 text-center mt-4" th:if="${!health_card.isEmpty()}">
     <h5 class="text-info mb-4">Health card</h5>
-
+    <a class="btn btn-outline-info lead mb-3" target="_blank"
+       th:if="${current_logged_in.userRole.name() == 'ADMIN' || health_card.get(0).patient.id == current_logged_in.id}"
+       th:href="@{/patients/{id}/export-health-card(id=${health_card.get(0).patient.id})}">Export health card</a>
+    <hr class="my-4">
 
     <div th:each="as: ${health_card}">
 
