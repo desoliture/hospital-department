@@ -1,30 +1,23 @@
 package com.kozka.hospitaldepartment.controllers;
 
-import com.kozka.hospitaldepartment.entities.Assignment;
-import com.kozka.hospitaldepartment.entities.AssignmentType;
 import com.kozka.hospitaldepartment.entities.User;
 import com.kozka.hospitaldepartment.entities.UserRole;
-import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
+import com.kozka.hospitaldepartment.utils.ControllersUtil;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 /**
  * @author Kozka Ivan
@@ -54,6 +47,7 @@ public class MainController {
     }
 
     @GetMapping("/my-patients")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'NURSE')")
     public String getMyPatients(
             @RequestParam(
                     value = "or",
@@ -67,17 +61,11 @@ public class MainController {
             ) Pageable pageable,
             Model model
     ) {
+
         var current = userService.getCurrentLoggedUser();
         List<User> patients = new ArrayList<>(userService.getAllActivePatientsForDoctor(current));
 
-        switch (order) {
-            case "al":
-                patients.sort(Comparator.comparing(User::getFullName).reversed());
-                break;
-            case "br":
-                patients.sort(Comparator.comparing(User::getBirth));
-                break;
-        }
+        ControllersUtil.sortingByOrder(order, patients);
 
         Page<User> page = userService.getPageFor(patients, pageable);
 
@@ -89,8 +77,10 @@ public class MainController {
     }
 
     @GetMapping("/health-card")
+    @PreAuthorize("hasAuthority('PATIENT')")
     public String getHealthCard(Model model) {
         var user = userService.getCurrentLoggedUser();
+
         var healthCard = userService.getHealthCardFor(user);
 
         model.addAttribute("current_logged_in", user);

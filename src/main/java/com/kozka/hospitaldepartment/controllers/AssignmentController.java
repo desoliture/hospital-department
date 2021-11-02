@@ -3,12 +3,12 @@ package com.kozka.hospitaldepartment.controllers;
 import com.kozka.hospitaldepartment.entities.Assignment;
 import com.kozka.hospitaldepartment.entities.AssignmentType;
 import com.kozka.hospitaldepartment.entities.UserRole;
+import com.kozka.hospitaldepartment.exceptions.ForbiddenException;
 import com.kozka.hospitaldepartment.services.AssignmentService;
 import com.kozka.hospitaldepartment.services.UserService;
-import com.kozka.hospitaldepartment.utils.ControllerUtil;
+import com.kozka.hospitaldepartment.utils.ControllersUtil;
 import lombok.AllArgsConstructor;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -16,15 +16,11 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
-import org.springframework.validation.FieldError;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.Map;
 
 /**
  * @author Kozka Ivan
@@ -46,17 +42,16 @@ public class AssignmentController {
             ) Pageable pageable
     ) {
         var user = userService.getCurrentLoggedUser();
-        Page<Assignment> page;
+        Page<Assignment> page = null;
 
         if (user.getUserRole() == UserRole.ADMIN) {
             page = assignmentService.getAll(pageable);
-        }
-        else if (user.getUserRole() == UserRole.PATIENT) {
+        } else if (user.getUserRole() == UserRole.PATIENT) {
             page = assignmentService.getAllForPatient(pageable, user);
         }
-        else {
-            page = null;
-        }
+//        else {
+//            page = null;
+//        }
 
         model.addAttribute("current_logged_in", user);
         model.addAttribute("page", page);
@@ -65,6 +60,7 @@ public class AssignmentController {
     }
 
     @GetMapping("/for-me")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'NURSE')")
     public String getAssignmentsForMe(
             @PageableDefault(
                     sort = {"assignmentDate"},
@@ -75,7 +71,7 @@ public class AssignmentController {
     ) {
         var current = userService.getCurrentLoggedUser();
 
-        if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
+//        if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
 
         Page<Assignment> page = assignmentService.getAllForDoctor(pageable, current);
 
@@ -87,6 +83,7 @@ public class AssignmentController {
     }
 
     @GetMapping("/by-me")
+    @PreAuthorize("hasAnyAuthority('DOCTOR', 'NURSE')")
     public String getAssignmentsByMe(
             @PageableDefault(
                     sort = {"assignmentDate"},
@@ -96,8 +93,6 @@ public class AssignmentController {
             Model model
     ) {
         var current = userService.getCurrentLoggedUser();
-
-        if (current.getUserRole() == UserRole.ADMIN) return "redirect:/assignments";
 
         Page<Assignment> page = assignmentService.getAllByDoctor(pageable, current);
 
@@ -109,26 +104,20 @@ public class AssignmentController {
     }
 
     @GetMapping("/add")
+    @PreAuthorize("hasAnyAuthority('ADMIN', 'DOCTOR')")
     public String addAssignments(Model model) {
-        var current = userService.getCurrentLoggedUser();
-        var patients = userService.getAllActivePatientsForDoctor(current);
-        var allPatients = userService.getAllActivePatients();
-        var doctors = userService.getAllActiveDoctors();
-        var allDoctors = userService.getAllActiveDoctorsAndNurses();
-
-        model.addAttribute("current_logged_in", current);
-        model.addAttribute("patients", patients);
-        model.addAttribute("all_patients", allPatients);
-        model.addAttribute("all_doctors", allDoctors);
-        model.addAttribute("doctors", doctors);
-        model.addAttribute("new_assignment", new Assignment());
+        model.mergeAttributes(ControllersUtil
+                .assignmentPutAllInModel(
+                        userService, new Assignment()
+                )
+        );
 
         return "staff/assignments-add";
     }
 
     @PostMapping("/add")
     public String addAssignmentsPost(
-            @Valid @ModelAttribute("new_assignment") Assignment newAssg,
+            @Valid @ModelAttribute("assignment") Assignment assg,
             BindingResult bindingResult,
             @ModelAttribute("pat-id") Integer patId,
             @ModelAttribute("asg-id-all") Integer asgIdAll,
@@ -136,46 +125,29 @@ public class AssignmentController {
             Model model
     ) {
         if (bindingResult.hasErrors()) {
-            var allPatients = userService.getAllActivePatients();
-            var current = userService.getCurrentLoggedUser();
-            var patients = userService.getAllActivePatientsForDoctor(current);
-            var allDoctors = userService.getAllActiveDoctorsAndNurses();
-            var doctors = userService.getAllActiveDoctors();
+            model.mergeAttributes(
+                    ControllersUtil.assignmentPutAllInModel(
+                            userService, assg
+                    )
+            );
 
-            model.addAttribute("current_logged_in", current);
-            model.addAttribute("patients", patients);
-            model.addAttribute("all_patients", allPatients);
-            model.addAttribute("all_doctors", allDoctors);
-            model.addAttribute("doctors", doctors);
-            model.addAttribute("new_assignment", newAssg);
-
-            var errors = ControllerUtil.getErrorsMap(bindingResult);
+            var errors = ControllersUtil.getErrorsMap(bindingResult);
             model.addAttribute("errors_map", errors);
 
             return "staff/assignments-add";
         }
 
-        if (newAssg.getAssigner() == null)
-            newAssg.setAssigner(userService.getCurrentLoggedUser());
+        ControllersUtil.setAssignmentDetails(
+                assg, userService, asgIdAll, asgIdDoc, patId
+        );
 
-        int asgId;
 
-        if (newAssg.getAssgType() == AssignmentType.PROCEDURE
-                || newAssg.getAssgType() == AssignmentType.MEDICINE)
-        {
-            asgId = asgIdAll;
-        }
-        else asgId = asgIdDoc;
+        assg.setAssigner(userService.getCurrentLoggedUser());
+        assg.setCompleted(false);
+        assg.setCreationDate(LocalDateTime.now());
 
-        var patient = userService.getUserById(patId);
-        var assigned = userService.getUserById(asgId);
 
-        newAssg.setPatient(patient);
-        newAssg.setAssigned(assigned);
-        newAssg.setCompleted(false);
-        newAssg.setCreationDate(LocalDateTime.now());
-
-        assignmentService.save(newAssg);
+        assignmentService.save(assg);
 
         return "redirect:/assignments";
     }
@@ -186,27 +158,19 @@ public class AssignmentController {
             @PathVariable("id") Assignment assg,
             Model model
     ) {
-        var current = userService.getCurrentLoggedUser();
-        var patients = userService.getAllActivePatientsForDoctor(current);
-        var allPatients = userService.getAllActivePatients();
-        var doctors = userService.getAllActiveDoctors();
-        var allDoctors = userService.getAllActiveDoctorsAndNurses();
-
-        model.addAttribute("current_logged_in", current);
-        model.addAttribute("patients", patients);
-        model.addAttribute("all_patients", allPatients);
-        model.addAttribute("all_doctors", allDoctors);
-        model.addAttribute("doctors", doctors);
-        model.addAttribute("edited_assg", assg);
-
         assg.setId(id);
+        model.mergeAttributes(
+                ControllersUtil.assignmentPutAllInModel(
+                        userService, assg
+                )
+        );
 
         return "staff/assignments-edit";
     }
 
     @PostMapping("/{id}/edit")
     public String editAssignmentPost(
-            @Valid @ModelAttribute("edited_assg") Assignment edited,
+            @Valid @ModelAttribute("assignment") Assignment assg,
             BindingResult bindingResult,
             Model model,
             @PathVariable("id") Integer id,
@@ -214,44 +178,28 @@ public class AssignmentController {
             @ModelAttribute("asg-id-all") Integer asgIdAll,
             @ModelAttribute("asg-id-doc") Integer asgIdDoc
     ) {
-        int asgId;
-        if (edited.getAssgType() == AssignmentType.PROCEDURE
-                || edited.getAssgType() == AssignmentType.MEDICINE)
-        {
-            asgId = asgIdAll;
-        }
-        else asgId = asgIdDoc;
 
-        var patient = userService.getUserById(patId);
-        var assigned = userService.getUserById(asgId);
+        ControllersUtil.setAssignmentDetails(
+                assg, userService, asgIdAll, asgIdDoc, patId
+        );
 
-        edited.setId(id);
-        edited.setPatient(patient);
-        edited.setAssigned(assigned);
+        assg.setId(id);
 
-        if (bindingResult.hasErrors()) {
-            var current = userService.getCurrentLoggedUser();
-            var patients = userService.getAllActivePatientsForDoctor(current);
-            var allPatients = userService.getAllActivePatients();
-            var doctors = userService.getAllActiveDoctors();
-            var allDoctors = userService.getAllActiveDoctorsAndNurses();
-
-            model.addAttribute("current_logged_in", current);
-            model.addAttribute("patients", patients);
-            model.addAttribute("all_patients", allPatients);
-            model.addAttribute("all_doctors", allDoctors);
-            model.addAttribute("doctors", doctors);
-            model.addAttribute("edited_assg", edited);
-
-            var errorsMap = ControllerUtil.getErrorsMap(bindingResult);
-            model.addAttribute("errors_map", errorsMap);
-
-            return "staff/assignments-edit";
+        if (!bindingResult.hasErrors()) {
+            assignmentService.update(assg);
+            return "redirect:/assignments";
         }
 
-        assignmentService.update(edited);
+        model.mergeAttributes(
+                ControllersUtil.assignmentPutAllInModel(
+                        userService, assg
+                )
+        );
 
-        return "redirect:/assignments";
+        var errorsMap = ControllersUtil.getErrorsMap(bindingResult);
+        model.addAttribute("errors_map", errorsMap);
+
+        return "staff/assignments-edit";
     }
 
     @GetMapping("/{id}/hold")
@@ -260,6 +208,11 @@ public class AssignmentController {
             @PathVariable("id") Assignment assg,
             Model model
     ) {
+        var current = userService.getCurrentLoggedUser();
+
+        if (!assg.getAssigned().getId().equals(current.getId()))
+            throw new ForbiddenException("You have no access!");
+
         model.addAttribute("assg_to_hold", assg);
         model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
         return "staff/assignments-hold";
@@ -272,8 +225,8 @@ public class AssignmentController {
             Model model
     ) {
         if (assg.getConclusion() == null
-                || assg.getConclusion().equals("")) {
-
+                || assg.getConclusion().equals("")
+        ) {
             model.addAttribute("conc_error", "Conclusion can`t be empty!");
             model.addAttribute("assg_to_hold", assg);
             model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
@@ -294,13 +247,18 @@ public class AssignmentController {
             Model model,
             HttpServletRequest request
     ) {
-        String previousUrl = request
+        var current = userService.getCurrentLoggedUser();
+        if (!current.getUserRole().name().equals("ADMIN")
+                && !(assignment.getAssigner().getId().equals(current.getId())))
+            throw new ForbiddenException("You have no access!");
+
+        String referer = request
                 .getHeader("Referer")
                 .replace("http://localhost:8080", "");
 
         model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
         model.addAttribute("assg_to_remove", assignment);
-        model.addAttribute("previous_url", previousUrl);
+        model.addAttribute("previous_url", referer);
         return "admin/assignments-remove";
     }
 

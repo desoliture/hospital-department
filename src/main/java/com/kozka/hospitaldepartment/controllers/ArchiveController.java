@@ -1,5 +1,6 @@
 package com.kozka.hospitaldepartment.controllers;
 
+import com.kozka.hospitaldepartment.exceptions.BadRequestException;
 import com.kozka.hospitaldepartment.services.UserService;
 import lombok.AllArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,6 +43,17 @@ public class ArchiveController {
     @PreAuthorize("hasAuthority('ADMIN')")
     public String getArchivedDoctors(Model model) {
         var users = userService.getAllInactiveDoctors();
+
+        model.addAttribute("archived", users);
+        model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());
+
+        return "admin/archived-users";
+    }
+
+    @GetMapping("/admins")
+    @PreAuthorize("hasAuthority('ADMIN')")
+    public String getArchivedAdmins(Model model) {
+        var users = userService.getAllInactiveAdmins();
 
         model.addAttribute("archived", users);
         model.addAttribute("current_logged_in", userService.getCurrentLoggedUser());

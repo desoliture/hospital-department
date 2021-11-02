@@ -45,6 +45,10 @@
                     <a class="nav-link" th:href="@{/patients}">Patients</a>
                 </li>
                 <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}"
+                    th:class="${'nav-item ' + (cur_url.contains('admins') && !cur_url.contains('archive') ? 'active' : '')}">
+                    <a class="nav-link" th:href="@{/admins}">Admins</a>
+                </li>
+                <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}"
                     th:class="${'nav-item ' + (cur_url.contains('archive') ? 'active' : '')}">
                     <a class="nav-link" th:href="@{/archive}">Archive</a>
                 </li>

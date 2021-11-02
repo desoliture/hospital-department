@@ -9,20 +9,24 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
-
-    <title>Cabinet</title>
+    <title>Admins</title>
 </head>
 <body>
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
-<div th:if="${current_logged_in != null}" th:with="u=${current_logged_in}"
-     class="container w-50 text-center mt-5">
-<!--    <i class="bi bi-person-fill" style="font-size: 500%"></i>-->
-    <h5 class="text-info mb-4">Personal data</h5>
-    <div th:insert="fragments/user-table-fragment"/>
-    <a class="btn btn-light btn-block text-body lead mt-3"
-       th:href="@{/users/{id}/edit(id=${current_logged_in.id})}">Edit</a>
+<div class="container w-50 text-center mt-4">
+    <h5 class="text-info mb-4">All admins</h5>
+    <a class="btn btn-outline-info lead mb-3"
+       th:href="@{/admins/add}"><i class="bi bi-person-plus text-warning"></i> Add admin</a>
+
+    <div th:each="u: ${admins}">
+        <div th:insert="fragments/user-table-fragment"/>
+
+        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${u.id})}"><i class="bi bi-pen text-warning"></i> Edit</a>
+        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/remove(id=${u.id})}"><i class="bi bi-eraser text-warning"></i> Remove</a>
+        <hr class="my-4">
+    </div>
 </div>
 
 <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"

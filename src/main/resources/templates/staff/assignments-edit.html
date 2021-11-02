@@ -17,18 +17,18 @@
 <div class="container w-50 text-center mt-4"
      th:if="${!patients.isEmpty() || current_logged_in.userRole.name() == 'ADMIN'}">
     <h5 class="text-info mb-4">Add assignment</h5>
-    <form th:action="@{/assignments/{id}/edit(id=${edited_assg.id})}" th:method="post" th:object="${edited_assg}">
+    <form th:action="@{/assignments/{id}/edit(id=${assignment.id})}" th:method="post" th:object="${assignment}">
 
         <div class="form-group m-2 mb-3" th:if="${current_logged_in.userRole.name() != 'ADMIN'}">
             <label for="pat" class="mb-1 lead">Patient</label>
             <select name="pat-id" id="pat" class="form-control">
-                <option th:each="p: ${patients}" th:value="${p.id}" th:selected="${edited_assg.patient.id == p.id}" th:text="${p.toStringLight()}"/>
+                <option th:each="p: ${patients}" th:value="${p.id}" th:selected="${assignment.patient.id == p.id}" th:text="${p.toStringLight()}"/>
             </select>
         </div>
         <div class="form-group m-2 mb-3" th:if="${current_logged_in.userRole.name() == 'ADMIN'}">
             <label for="pat2" class="mb-1 lead">Patient</label>
             <select name="pat-id" id="pat2" class="form-control">
-                <option th:each="p: ${all_patients}" th:value="${p.id}" th:selected="${edited_assg.patient.id == p.id}" th:text="${p.toStringLight()}"/>
+                <option th:each="p: ${all_patients}" th:value="${p.id}" th:selected="${assignment.patient.id == p.id}" th:text="${p.toStringLight()}"/>
             </select>
         </div>
 
@@ -36,7 +36,7 @@
             <label for="at" class="mb-1 lead">Assignment type</label>
             <div class="form-check" id="at"
                  th:each="a: ${T(com.kozka.hospitaldepartment.entities.AssignmentType).values()}">
-                <input th:selected="${edited_assg.assgType == a}" onclick="filter()" class="form-check-input" required type="radio" th:value="${a}" th:text="${a}"
+                <input th:selected="${assignment.assgType == a}" onclick="filter()" class="form-check-input" required type="radio" th:value="${a}" th:text="${a}"
                        th:field="*{assgType}"/>
             </div>
         </div>

@@ -2,6 +2,7 @@
 <html lang="en" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
     <title>Title</title>
 </head>
 <body>
@@ -103,7 +104,8 @@
                 <th th:if="${!as.completed && current_date < as.assignmentDate}" colspan="2" class="align-middle table-active">
                     <p class="text-body lead">Planned</p>
                     <a th:if="${as.assigned.email == current_logged_in.email}"
-                       class="btn btn-light text-body lead mt-3" th:href="@{/assignments/{id}/hold(id=${as.id})}">Hold</a>
+                       class="btn btn-light text-body lead mt-3"
+                       th:href="@{/assignments/{id}/hold(id=${as.id})}"><i class="bi bi-bandaid text-warning"></i> Hold</a>
                 </th>
                 <th th:if="${as.completed}" colspan="2" class="align-middle table-info">
                     <p class="text-body lead">finished</p>

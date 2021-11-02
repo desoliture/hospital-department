@@ -92,6 +92,7 @@ public class DoctorController {
         model.addAttribute("order", "or=" + order);
         model.addAttribute("staff_to_show", "sts=" + stuffToShow);
         model.addAttribute("num_of_pats_map", numOfPatsMap);
+
         return "patient/doctors";
     }
 

@@ -6,13 +6,9 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 /**
  * @author Kozka Ivan
  */
-@ResponseStatus(HttpStatus.FORBIDDEN)
-public class ForbiddenException extends RuntimeException {
-
-    public ForbiddenException() {
-    }
-
-    public ForbiddenException(String message) {
+@ResponseStatus(HttpStatus.NOT_FOUND)
+public class UserNotFoundException extends RuntimeException{
+    public UserNotFoundException(String message) {
         super(message);
     }
 }

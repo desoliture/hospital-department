@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
     <title>Patients</title>
 </head>
 <body>
@@ -17,11 +18,11 @@
 <div class="container w-50 text-center mt-4" th:if="${!page.isEmpty()}">
     <h5 class="text-info mb-4">All patients</h5>
     <a class="btn btn-outline-info lead mb-3"
-       th:href="@{/patients/add}">Add patient</a>
+       th:href="@{/patients/add}"><i class="bi bi-person-plus text-warning"></i> Add patient</a>
 
     <!-- Button trigger modal -->
     <button type="button" class="btn btn-outline-info lead mb-3" data-toggle="modal" data-target="#exampleModal">
-        Filter
+        <i class="bi bi-funnel text-warning"></i> Filter
     </button>
 
     <!-- Modal -->
@@ -81,10 +82,10 @@
     <div th:each="u: ${page}">
         <div th:insert="fragments/user-table-fragment"/>
 
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${u.id})}">Edit</a>
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/remove(id=${u.id})}">Remove</a>
-        <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-light btn-block text-body lead mt-3"
-           th:href="@{/users/{id}/health-card(id=${u.id})}">Health card</a>
+        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${u.id})}"><i class="bi bi-pen text-warning"></i> Edit</a>
+        <a class="btn btn-light btn-block text-body lead mt-2" th:href="@{/users/{id}/remove(id=${u.id})}"><i class="bi bi-eraser text-warning"></i> Remove</a>
+        <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-light btn-block text-body lead mt-2 mb-2"
+           th:href="@{/users/{id}/health-card(id=${u.id})}"><i class="bi bi-clipboard-data text-warning"></i> Health card</a>
         <hr class="my-4">
     </div>
 </div>

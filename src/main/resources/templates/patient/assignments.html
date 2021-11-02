@@ -8,6 +8,7 @@
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
     <title>Assignments</title>
 </head>
 <body>
@@ -20,7 +21,7 @@
     <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-outline-info lead mb-3"
        th:href="@{/assignments/add}">Add assignment</a>
 
-    <nav aria-label="Page navigation example">
+    <nav aria-label="Page navigation example" class="d-flex justify-content-around">
         <ul class="pagination pagination-sm justify-content-center">
             <li class="page-item disabled">
                 <span class="page-link">Pages</span>

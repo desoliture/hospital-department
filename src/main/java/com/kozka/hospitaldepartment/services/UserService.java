@@ -194,4 +194,21 @@ public class UserService implements UserDetailsService {
         return new PageImpl<User>(
                 list, PageRequest.of(currentPage, pageSize), users.size());
     }
+
+    public boolean isDoctorAssignedToPatient(User doc, User pat) {
+        return getAllActivePatientsForDoctor(doc)
+                .stream()
+                .mapToInt(User::getId)
+                .anyMatch(e -> e == pat.getId());
+    }
+
+    public List<User> getAllActiveAdmins() {
+        return userRepo
+                .getUsersByUserRoleAndActiveIsTrue(UserRole.ADMIN);
+    }
+
+    public List<User> getAllInactiveAdmins() {
+        return userRepo
+                .getUsersByUserRoleAndActiveIsFalse(UserRole.ADMIN);
+    }
 }
