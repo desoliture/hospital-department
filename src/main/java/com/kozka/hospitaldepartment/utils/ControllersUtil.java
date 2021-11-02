@@ -7,6 +7,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
 
 import java.time.format.DateTimeFormatter;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
@@ -52,5 +53,16 @@ public class ControllerUtil {
 
                     return new String[] {date, asType, assigner, assigned, conclusion};
                 }).collect(Collectors.toList());
+    }
+
+    public static void sortingByOrder(String order, List<User> patients) {
+        switch (order) {
+            case "al":
+                patients.sort(Comparator.comparing(User::getFullName).reversed());
+                break;
+            case "br":
+                patients.sort(Comparator.comparing(User::getBirth));
+                break;
+        }
     }
 }
