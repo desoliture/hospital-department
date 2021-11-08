@@ -9,22 +9,26 @@
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
           integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.0/font/bootstrap-icons.css">
-    <title>Admins</title>
+    <title th:text="#{messages.title.admins}"></title>
 </head>
 <body>
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
 <div class="container w-50 text-center mt-4">
-    <h5 class="text-info mb-4">All admins</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.pages.captions.admins.h}"></h5>
     <a class="btn btn-outline-info lead mb-3"
-       th:href="@{/admins/add}"><i class="bi bi-person-plus text-warning"></i> Add admin</a>
+       th:href="@{/admins/add}" th:text="#{messages.pages.buttons.admins.add}"></a>
 
     <div th:each="u: ${admins}">
         <div th:insert="fragments/user-table-fragment"/>
 
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${u.id})}"><i class="bi bi-pen text-warning"></i> Edit</a>
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/remove(id=${u.id})}"><i class="bi bi-eraser text-warning"></i> Remove</a>
+        <a class="btn btn-light btn-block text-body lead mt-3"
+           th:text="#{messages.pages.buttons.edit}"
+           th:href="@{/users/{id}/edit(id=${u.id})}"></a>
+        <a class="btn btn-light btn-block text-body lead mt-3"
+           th:text="#{messages.pages.buttons.remove}"
+           th:href="@{/users/{id}/remove(id=${u.id})}"></a>
         <hr class="my-4">
     </div>
 </div>

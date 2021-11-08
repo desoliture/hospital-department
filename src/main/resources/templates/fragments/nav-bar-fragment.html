@@ -8,13 +8,9 @@
 <div th:fragment="header" th:with="cur_url=${#httpServletRequest.requestURI.replace('http://localhost:8080', '')}">
     <nav class="navbar navbar-expand-lg navbar-light bg-light">
         <a class="navbar-brand disabled">
-            <div class="text-danger">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
-                     class="bi bi-activity" viewBox="0 0 16 16">
-                    <path fill-rule="evenodd"
-                          d="M6 2a.5.5 0 0 1 .47.33L10 12.036l1.53-4.208A.5.5 0 0 1 12 7.5h3.5a.5.5 0 0 1 0 1h-3.15l-1.88 5.17a.5.5 0 0 1-.94 0L6 3.964 4.47 8.171A.5.5 0 0 1 4 8.5H.5a.5.5 0 0 1 0-1h3.15l1.88-5.17A.5.5 0 0 1 6 2Z"/>
-                </svg>
-                Hospital
+            <div class="text-danger d-flex flex-row">
+                <i class="bi bi-activity"> </i>
+                <div th:text="#{messages.nav.item.brand}"></div>
             </div>
         </a>
         <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText"
@@ -24,47 +20,59 @@
         <div class="collapse navbar-collapse" id="navbarText">
             <ul class="navbar-nav mr-auto">
                 <li th:class="${'nav-item ' + (cur_url.contains('cabinet') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/}">Cabinet <span class="sr-only">(current)</span></a>
+                    <a th:text="#{messages.nav.item.cab}" class="nav-link" th:href="@{/}"><span class="sr-only">(current)</span></a>
                 </li>
                 <li th:class="${'nav-item ' + (cur_url.contains('assignments') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/assignments}">Assignments</a>
+                    <a th:text="#{messages.nav.item.assignments}" class="nav-link"
+                       th:href="@{/assignments}">Assignments</a>
                 </li>
                 <li th:class="${'nav-item ' + (cur_url.contains('doctors') && !cur_url.contains('archive') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/doctors}">Doctors</a>
+                    <a th:text="#{messages.nav.item.doctors}" class="nav-link" th:href="@{/doctors}">Doctors</a>
                 </li>
                 <li th:if="${current_logged_in.userRole.name() == 'PATIENT'}"
                     th:class="${'nav-item ' + (cur_url.contains('health-card') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/health-card}">Health card</a>
+                    <a th:text="#{messages.nav.item.health-card}" class="nav-link" th:href="@{/health-card}">Health
+                        card</a>
                 </li>
                 <li th:if="${current_logged_in.userRole.name() == 'DOCTOR' || current_logged_in.userRole.name() == 'NURSE'}"
                     th:class="${'nav-item ' + (cur_url.contains('my-patients') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/my-patients}">My patients</a>
+                    <a th:text="#{messages.nav.item.my-patients}" class="nav-link" th:href="@{/my-patients}">My
+                        patients</a>
                 </li>
                 <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}"
                     th:class="${'nav-item ' + (cur_url.contains('patients') && !cur_url.contains('archive') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/patients}">Patients</a>
+                    <a th:text="#{messages.nav.item.patients}" class="nav-link" th:href="@{/patients}">Patients</a>
                 </li>
                 <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}"
                     th:class="${'nav-item ' + (cur_url.contains('admins') && !cur_url.contains('archive') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/admins}">Admins</a>
+                    <a th:text="#{messages.nav.item.admins}" class="nav-link" th:href="@{/admins}">Admins</a>
                 </li>
                 <li th:if="${current_logged_in.userRole.name() == 'ADMIN'}"
                     th:class="${'nav-item ' + (cur_url.contains('archive') ? 'active' : '')}">
-                    <a class="nav-link" th:href="@{/archive}">Archive</a>
+                    <a th:text="#{messages.nav.item.archive}" class="nav-link" th:href="@{/archive}">Archive</a>
                 </li>
             </ul>
+
+            <span class="navbar-text" th:with="url= ${#httpServletRequest.requestURI + '?lang='}">
+                <a th:text="#{messages.nav.item.lang.en}" th:href="${url + 'en'}"></a>
+                <a th:text="#{messages.nav.item.lang.ua}" th:href="${url + 'ua'}"></a>
+            </span>
+
             <span class="navbar-text">
+
                 <form th:action="@{/logout}" th:method="post">
 
-                    <button type="submit" class="btn btn-light btn-sm">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                    <button type="submit" class="btn btn-light btn-sm d-flex flex-row">
+                        <div th:text="#{messages.nav.item.logout}"></div>
+
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
                              class="bi bi-box-arrow-in-right" viewBox="0 0 16 16">
                             <path fill-rule="evenodd"
                                   d="M6 3.5a.5.5 0 0 1 .5-.5h8a.5.5 0 0 1 .5.5v9a.5.5 0 0 1-.5.5h-8a.5.5 0 0 1-.5-.5v-2a.5.5 0 0 0-1 0v2A1.5 1.5 0 0 0 6.5 14h8a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 14.5 2h-8A1.5 1.5 0 0 0 5 3.5v2a.5.5 0 0 0 1 0v-2z"/>
                             <path fill-rule="evenodd"
                                   d="M11.854 8.354a.5.5 0 0 0 0-.708l-3-3a.5.5 0 1 0-.708.708L10.293 7.5H1.5a.5.5 0 0 0 0 1h8.793l-2.147 2.146a.5.5 0 0 0 .708.708l3-3z"/>
                         </svg>
-                        Logout</button>
+                    </button>
                 </form>
             </span>
         </div>

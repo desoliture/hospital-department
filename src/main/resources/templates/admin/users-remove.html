@@ -7,12 +7,12 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <title>Removing user</title>
+    <title th:text="#{messages.title.remove}"></title>
 </head>
 <body>
 
 <div class="container w-50 text-center mt-4">
-    <h5 class="text-warning mb-4">Are you sure?</h5>
+    <h5 class="text-warning mb-4" th:text="#{messages.pages.captions.remove.sure}"></h5>
     <form th:action="@{/users/remove}" th:method="post" th:object="${user_to_remove}">
 
         <input type="text" name="id" th:value="${user_to_remove.id}" style="display: none">
@@ -20,8 +20,10 @@
 
         <div th:insert="fragments/user-table-fragment" th:with="u=${user_to_remove}"/>
 
-        <a th:href="@{{previous}(previous=${previous_url})}" class="btn btn-outline-warning btn-block mt-2 mb-1">Deny</a>
-        <button type="submit" class="btn btn-outline-danger btn-block mb-4">Remove</button>
+        <a th:href="@{{previous}(previous=${previous_url})}"
+           class="btn btn-outline-warning btn-block mt-2 mb-1" th:text="#{message.pages.buttons.remove.deny}"></a>
+        <button type="submit"
+                class="btn btn-outline-danger btn-block mb-4" th:text="#{message.pages.buttons.remove.remove}"></button>
     </form>
 </div>
 

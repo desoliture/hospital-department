@@ -18,27 +18,27 @@
 </div>
 
 <div class="container w-50 text-center mt-4" th:if="${assg_to_hold.assigned == current_logged_in}">
-    <h5 class="text-info mb-4">Hold assignment</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.pages.captions.hold.h}"></h5>
     <form th:action="@{/assignments/{id}/hold(id=${assg_to_hold.id})}" th:method="post" th:object="${assg_to_hold}">
 
         <div class="form-group m-2 mb-3">
-            <label for="pat" class="mb-1 lead">Patient</label>
+            <label for="pat" class="mb-1 lead" th:text="#{messages.table.user-role.patient}"></label>
             <input id="pat" class="form-control" readonly type="text" th:field="*{patient}" th:value="${assg_to_hold.patient.toStringLight()}">
         </div>
 
         <div class="form-group m-2 mb-3">
-            <label for="at" class="mb-1 lead">Assignment type</label>
+            <label for="at" class="mb-1 lead" th:text="#{messages.pages.captions.add.assignment-type}"></label>
             <input id="at" class="form-control" readonly type="text" th:field="*{assgType}">
         </div>
 
         <div class="form-group m-2 mb-3">
-            <label for="ds" class="mb-1 lead">Description</label>
+            <label for="ds" class="mb-1 lead" th:text="#{messages.pages.captions.add.description}"></label>
             <input id="ds" readonly type="text" class="form-control" th:value="${assg_to_hold.description}" th:field="*{description}">
         </div>
 
         <div class="form-group m-2 mb-3" th:with="err=${conc_error == null}">
-            <label for="ad" class="mb-1 lead">Conclusion</label>
-            <input id="ad" th:class="'form-control' + ${err ? '' : ' is-invalid'}" placeholder="Conclusion" type="text" th:field="*{conclusion}">
+            <label for="ad" class="mb-1 lead" th:text="#{messages.table.captions.conclusion}"></label>
+            <input id="ad" th:class="'form-control' + ${err ? '' : ' is-invalid'}" type="text" th:field="*{conclusion}">
             <div class="invalid-feedback" th:if="err" th:text="${conc_error}"/>
         </div>
 
@@ -47,7 +47,7 @@
         <input hidden class="form-control" type="datetime-local" th:field="*{creationDate}">
         <input hidden class="form-control" type="datetime-local" th:field="*{assignmentDate}">
 
-        <button type="submit" class="btn btn-primary btn-block mt-2 mb-4">Submit</button>
+        <button type="submit" class="btn btn-primary btn-block mt-2 mb-4" th:text="#{messages.table.buttons.submit}"></button>
     </form>
 </div>
 

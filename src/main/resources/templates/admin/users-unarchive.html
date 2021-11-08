@@ -12,7 +12,7 @@
 <body>
 
 <div class="container w-50 text-center mt-4">
-    <h5 class="text-warning mb-4">Are you sure?</h5>
+    <h5 class="text-warning mb-4" th:text="#{messages.pages.captions.remove.sure}"></h5>
     <form th:action="@{/users/unarchive}" th:method="post" th:object="${user_to_unarchive}">
 
         <input type="text" name="id" th:value="${user_to_unarchive.id}" style="display: none">
@@ -20,8 +20,9 @@
 
         <div th:insert="fragments/user-table-fragment" th:with="u=${user_to_unarchive}"/>
 
-        <a th:href="@{{previous}(previous=${previous_url})}" class="btn btn-outline-warning btn-block mt-2 mb-1">Deny</a>
-        <button type="submit" class="btn btn-outline-danger btn-block mb-4">Unarchive</button>
+        <a th:href="@{{previous}(previous=${previous_url})}"
+           class="btn btn-outline-warning btn-block mt-2 mb-1" th:text="#{message.pages.buttons.remove.deny}"></a>
+        <button type="submit" class="btn btn-outline-danger btn-block mb-4" th:text="#{message.pages.buttons.remove.unarchive}"></button>
     </form>
 </div>
 

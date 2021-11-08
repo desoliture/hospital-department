@@ -7,7 +7,7 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <title>Health card</title>
+    <title th:text="#{messages.title.health-card}"></title>
 </head>
 <body>
 <!-- Nav bar -->
@@ -16,40 +16,46 @@
 <div class="container w-50 text-center mt-4" th:if="${current_logged_in.userRole == 'ADMIN'
  || current_logged_in.userRole == 'DOCTOR'
  || current_logged_in.userRole == 'NURSE'}" th:with="u=${patient}">
-    <h5 class="text-info mb-4">Patient</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.table.user-role.patient}"></h5>
     <div th:insert="fragments/user-table-fragment"/>
 </div>
 
 <div class="container w-50 text-center mt-4" th:if="${health_card.isEmpty()}">
-    <h5 class="text-info mb-4">Health card is empty!</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.pages.captions.health-card.info.empty}"></h5>
 </div>
 
 <div class="container w-50 text-center mt-4" th:if="${!health_card.isEmpty()}">
-    <h5 class="text-info mb-4">Health card</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.pages.captions.health-card.h}"></h5>
     <a class="btn btn-outline-info lead mb-3" target="_blank"
        th:if="${current_logged_in.userRole.name() == 'ADMIN' || health_card.get(0).patient.id == current_logged_in.id}"
-       th:href="@{/patients/{id}/export-health-card(id=${health_card.get(0).patient.id})}">Export health card</a>
+       th:href="@{/patients/{id}/export-health-card(id=${health_card.get(0).patient.id})}"
+       th:text="#{messages.pages.buttons.export-health-card}"></a>
     <hr class="my-4">
 
     <div th:each="as: ${health_card}">
 
-        <table class="table table-borderless">
+        <table class="table table-borderless"
+               th:with="from=#{messages.pages.captions.health-card.from},
+                        to=#{messages.pages.captions.health-card.to},
+                        on=#{messages.pages.captions.health-card.on},
+                        for=#{messages.pages.captions.health-card.for}
+                ">
             <tbody>
             <tr>
                 <th class="align-middle" colspan="4">
-                    <p class="text-body lead" th:text="${'From ' + as.assigner?.firstName + ' ' + as.assigner?.lastName
-                        + ' to ' + as.assigned?.firstName + ' ' + as.assigned?.lastName}"/>
+                    <p class="text-body lead" th:text="${from + ' ' + as.assigner?.firstName + ' ' + as.assigner?.lastName
+                        + ' ' + to + ' ' + as.assigned?.firstName + ' ' + as.assigned?.lastName}"/>
                 </th>
             </tr>
             <tr>
                 <th class="align-middle" colspan="4">
-                    <p class="text-body lead" th:text="${as.assgType + ' on ' + #temporals.format(as.assignmentDate, 'dd-MM-yyyy HH:mm')
-                     + ' for ' + as.description}"/>
+                    <p class="text-body lead" th:text="${as.assgType + ' ' + on + ' ' + #temporals.format(as.assignmentDate, 'dd-MM-yyyy HH:mm')
+                     + ' ' + for + ' ' + as.description}"/>
                 </th>
             </tr>
             <tr>
                 <th class="align-middle">
-                    <p class="text-body lead">Conclusion: </p>
+                    <p class="text-body lead" th:text="#{messages.table.captions.conclusion}"></p>
                 </th>
                 <th class="align-middle" colspan="3">
                     <p class="text-body lead" th:text="${as.conclusion}"/>

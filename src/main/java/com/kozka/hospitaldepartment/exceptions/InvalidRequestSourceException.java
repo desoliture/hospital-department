@@ -9,7 +9,7 @@ import javax.servlet.http.HttpServletRequest;
  * @author Kozka Ivan
  */
 @ResponseStatus(HttpStatus.BAD_REQUEST)
-public class InvalidRequestSourceException extends RuntimeException {
+public class InvalidRequestSourceException extends ApiException {
     public InvalidRequestSourceException(
             String msg,
             String refererUrl,

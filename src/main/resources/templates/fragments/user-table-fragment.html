@@ -10,20 +10,20 @@
 
             <tbody>
             <tr th:if="${u.userRole.name() == 'PATIENT'}" class="table-primary">
-                <th colspan="2" th:text="${u.userRole}"/>
+                <th colspan="2" th:text="#{messages.table.user-role.patient}"/>
             </tr>
             <tr th:if="${u.userRole.name() == 'DOCTOR'}" class="table-info">
-                <th colspan="2" th:text="${u.userRole}"/>
+                <th colspan="2" th:text="#{messages.table.user-role.doctor}"/>
             </tr>
             <tr th:if="${u.userRole.name() == 'NURSE'}" class="table-success">
-                <th colspan="2" th:text="${u.userRole}"/>
+                <th colspan="2" th:text="#{messages.table.user-role.nurse}"/>
             </tr>
             <tr th:if="${u.userRole.name() == 'ADMIN'}" class="table-light">
-                <th colspan="2" th:text="${u.userRole}"/>
+                <th colspan="2" th:text="#{messages.table.user-role.admin}"/>
             </tr>
             <tr>
                 <th class="align-middle">
-                    <p class="text-body lead">Full name</p>
+                    <p class="text-body lead" th:text="#{messages.table.full-name}"></p>
                 </th>
                 <th class="align-middle">
                     <p class="text-body lead" th:text="${u.firstName + ' ' + u.lastName}"/>
@@ -31,7 +31,7 @@
             </tr>
             <tr>
                 <th class="align-middle">
-                    <p class="text-body lead">Email</p>
+                    <p class="text-body lead" th:text="#{messages.table.email}"></p>
                 </th>
                 <th class="align-middle">
                     <p class="text-body lead" th:text="${u.email}"/>
@@ -39,7 +39,7 @@
             </tr>
             <tr th:if="${u.birth != null}">
                 <th class="align-middle">
-                    <p class="text-body lead">Birth</p>
+                    <p class="text-body lead" th:text="#{messages.table.birth}"></p>
                 </th>
                 <th class="align-middle">
                     <p class="text-body lead"
@@ -49,7 +49,7 @@
             </tr>
             <tr th:if="${u.specialization != null}">
                 <th class="align-middle">
-                    <p class="text-body lead">Specialization</p>
+                    <p class="text-body lead" th:text="#{messages.table.specialization}"></p>
                 </th>
                 <th class="align-middle" colspan="2">
                     <p class="text-body lead" th:text="${u.specialization.namePar()}"/>
@@ -57,7 +57,7 @@
             </tr>
             <tr th:if="${u.userRole.name() == 'DOCTOR' || u.userRole.name() == 'NURSE'}">
                 <th class="align-middle">
-                    <p class="text-body lead">Number of patients</p>
+                    <p class="text-body lead" th:text="#{messages.table.num-of-patients}"></p>
                 </th>
                 <th class="align-middle" colspan="2">
                     <p class="text-body lead" th:text="${num_of_pats_map.get(u.id)}"/>

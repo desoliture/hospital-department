@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
  * @author Kozka Ivan
  */
 @ResponseStatus(HttpStatus.FORBIDDEN)
-public class UnreachablePatientException extends RuntimeException{
+public class UnreachablePatientException extends ApiException{
     public UnreachablePatientException() {
         super();
     }

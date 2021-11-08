@@ -7,26 +7,31 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <title>Archived</title>
+    <title th:text="#{messages.title.archived}"></title>
 </head>
 <body>
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
 <div class="container w-50 text-center mt-4">
-    <h5 class="text-info mb-4">Archived</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.pages.captions.archived.h}"></h5>
 
     <div th:each="u: ${archived}" th:if="${!archived.isEmpty()}">
         <div th:insert="fragments/user-table-fragment"/>
 
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${u.id})}">Edit</a>
-        <a class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/unarchive(id=${u.id})}">Unarchive</a>
+        <a class="btn btn-light btn-block text-body lead mt-3"
+           th:text="#{messages.pages.buttons.edit}"
+           th:href="@{/users/{id}/edit(id=${u.id})}"></a>
+        <a class="btn btn-light btn-block text-body lead mt-3"
+           th:text="#{message.pages.buttons.remove.unarchive}"
+           th:href="@{/users/{id}/unarchive(id=${u.id})}"></a>
 
         <hr class="my-4">
     </div>
 
     <div th:if="${archived.isEmpty()}">
-        <h5 class="text-primary mb-4">Nothing here!</h5>
+        <h5 class="text-primary mb-4" th:text="#{messages.pages.captions.archived.info.nothing}"></h5>
+        <a class="btn btn-outline-info" th:text="#{messages.pages.buttons.archived.go-back}" th:href="@{/archive/}"></a>
     </div>
 </div>
 

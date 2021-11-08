@@ -7,21 +7,27 @@
 
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
-    <title>Exploring user</title>
+    <title th:text="#{messages.title.exploring}"></title>
 </head>
 <body>
 <!-- Nav bar -->
 <div th:insert="fragments/nav-bar-fragment"/>
 
 <div class="container w-50 text-center mt-4">
-    <h5 class="text-info mb-4">Personal data</h5>
+    <h5 class="text-info mb-4" th:text="#{messages.pages.captions.cab.h}"></h5>
     <div th:insert="fragments/user-table-fragment" th:with="u=${explored_user}"/>
-    <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/edit(id=${explored_user.id})}">Edit</a>
+    <a th:if="${current_logged_in.userRole.name() == 'ADMIN'}"
+       class="btn btn-light btn-block text-body lead mt-3"
+       th:text="#{messages.pages.buttons.edit}"
+       th:href="@{/users/{id}/edit(id=${explored_user.id})}"></a>
 
     <div th:if="${explored_user.userRole.name() == 'PATIENT'}">
         <a th:if="${current_logged_in.userRole.name() == 'ADMIN'
     || current_logged_in.userRole.name() == 'DOCTOR'
-    || current_logged_in.userRole.name() == 'NURSE'}" class="btn btn-light btn-block text-body lead mt-3" th:href="@{/users/{id}/health-card(id=${explored_user.id})}">Health card</a>
+    || current_logged_in.userRole.name() == 'NURSE'}"
+           class="btn btn-light btn-block text-body lead mt-3"
+           th:text="#{messages.title.health-card}"
+           th:href="@{/users/{id}/health-card(id=${explored_user.id})}">Health card</a>
     </div>
 
 </div>
